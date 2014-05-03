@@ -39,6 +39,7 @@ setup(
         'django>=1.6',
     ],
     tests_require=[
+        'django-dynamic-fixture',
         'psycopg2',
         'django-nose',
         'south',
