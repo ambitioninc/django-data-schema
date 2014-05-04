@@ -81,6 +81,9 @@ class TimeFieldSchema(FieldSchema):
     """
     A model that performs additional datetime parsing when obtaining the value of a time field.
     """
+    # Use django manager utils to manage TimeFieldSchema objects
+    objects = ManagerUtilsManager()
+
     def get_value(self, obj):
         """
         If an integer time stamp is stored in the time field, convert it into a datetime object.
