@@ -2,9 +2,10 @@ from datetime import datetime
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from manager_utils import ManagerUtilsManager
 
 
-class DataSchemaManager(models.Manager):
+class DataSchemaManager(ManagerUtilsManager):
     """
     A model manager for data schemas. Caches related attributes of data schemas.
     """
@@ -62,6 +63,9 @@ class FieldSchema(models.Model):
     # The order in which this field appears in the UID for the record. It is null if it does
     # not appear in the uniqueness constraint
     uniqueness_order = models.PositiveIntegerField(null=True)
+
+    # Use django manager utils to manage FieldSchema objects
+    objects = ManagerUtilsManager()
 
     def get_value(self, obj):
         """
