@@ -133,6 +133,28 @@ class FieldSchemaTest(TestCase):
     """
     Tests functionality in the FieldSchema model.
     """
+    def test_set_value_dict(self):
+        """
+        Tests setting the value of a field when the object is a dictionary.
+        """
+        field_schema = G(FieldSchema, field_key='field_key')
+        obj = {
+            'field_key': 'none',
+        }
+        field_schema.set_value(obj, 'value')
+        self.assertEquals(obj, {'field_key': 'value'})
+
+    def test_set_value_obj(self):
+        """
+        Tests setting the value of an object.
+        """
+        class Input:
+            field_key = 'none'
+        field_schema = G(FieldSchema, field_key='field_key')
+        obj = Input()
+        field_schema.set_value(obj, 'value')
+        self.assertEquals(obj.field_key, 'value')
+
     def test_get_value_dict(self):
         """
         Tests the get_value function with a dictionary as input.

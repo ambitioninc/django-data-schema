@@ -68,4 +68,4 @@ print new_login_time_field.get_value(data)
 2014-04-02 00:00:00
 ```
 
-
+Note that ``FieldSchema`` and ``TimeFieldSchema`` objects have an analogous ``set_value`` function for setting the value of a field.
