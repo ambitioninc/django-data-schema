@@ -76,6 +76,15 @@ class FieldSchema(models.Model):
         else:
             return getattr(obj, self.field_key)
 
+    def set_value(self, obj, value):
+        """
+        Given an object, set the value of the field in that object.
+        """
+        if type(obj) is dict:
+            obj[self.field_key] = value
+        else:
+            setattr(obj, self.field_key, value)
+
 
 class TimeFieldSchema(FieldSchema):
     """
