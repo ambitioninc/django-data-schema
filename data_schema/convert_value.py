@@ -1,14 +1,14 @@
 """
 Functions for handling conversions of values from one type to another.
 """
-from datetime import datetime, date
+from datetime import datetime
 
 from data_schema.field_schema_type import FieldSchemaType
 
 
 # Create a mapping of the field schema types to their associated python types
 FIELD_SCHEMA_PYTHON_TYPES = {
-    FieldSchemaType.DATE: date,
+    FieldSchemaType.DATE: datetime,
     FieldSchemaType.DATETIME: datetime,
     FieldSchemaType.INT: int,
     FieldSchemaType.FLOAT: float,
@@ -48,16 +48,13 @@ def convert_value_datetime_type(field_schema_type, value, format=None):
 
     if isinstance(value, int) or isinstance(value, float):
         # Return a timestamp if the value is an integer or float
-        value = datetime.utcfromtimestamp(value)
+        return datetime.utcfromtimestamp(value)
     elif format:
         # If there is a format specified, assume the value is a string
-        value = datetime.strptime(value, format)
+        return datetime.strptime(value, format)
     else:
         # If there is no format specifi
         raise NotImplementedError('Unsupported input value for datetime conversion: {0}'.format(value))
-
-    # Convert it to a date object if necessary. Otherwise it should already be a datetime object
-    return value.date() if field_schema_type == FieldSchemaType.DATE else value
 
 
 def convert_value(field_schema_type, value, format=None):

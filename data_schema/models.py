@@ -1,5 +1,3 @@
-from datetime import datetime, date
-
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from manager_utils import ManagerUtilsManager
@@ -49,16 +47,6 @@ class DataSchema(models.Model):
         beforehand.
         """
         return sorted(self.fieldschema_set.all(), key=lambda k: k.field_position)
-
-
-# Create a mapping of the field schema types to their associated python types
-FIELD_SCHEMA_PYTHON_TYPES = {
-    FieldSchemaType.DATE: date,
-    FieldSchemaType.DATETIME: datetime,
-    FieldSchemaType.INT: int,
-    FieldSchemaType.FLOAT: float,
-    FieldSchemaType.STRING: str,
-}
 
 
 class FieldSchema(models.Model):
