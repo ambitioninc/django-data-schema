@@ -5,6 +5,7 @@ from django.db import models
 from manager_utils import ManagerUtilsManager
 
 from data_schema.convert_value import convert_value
+from data_schema.field_schema_type import FieldSchemaType
 
 
 class DataSchemaManager(ManagerUtilsManager):
@@ -48,17 +49,6 @@ class DataSchema(models.Model):
         beforehand.
         """
         return sorted(self.fieldschema_set.all(), key=lambda k: k.field_position)
-
-
-class FieldSchemaType(object):
-    """
-    Specifies all of the field schema types supported.
-    """
-    DATE = 'DATE'
-    DATETIME = 'DATETIME'
-    INT = 'INT'
-    FLOAT = 'FLOAT'
-    STRING = 'STRING'
 
 
 # Create a mapping of the field schema types to their associated python types
@@ -125,4 +115,4 @@ class FieldSchema(models.Model):
         else:
             value = getattr(obj, self.field_key)
 
-        return convert_value(FIELD_SCHEMA_PYTHON_TYPES[self.field_type], value, self.field_format)
+        return convert_value(self.field_type, value, self.field_format)
