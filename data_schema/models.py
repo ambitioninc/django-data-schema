@@ -1,8 +1,10 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from manager_utils import ManagerUtilsManager
+
+from data_schema.convert_value import convert_value
 
 
 class DataSchemaManager(ManagerUtilsManager):
@@ -42,9 +44,31 @@ class DataSchema(models.Model):
 
     def get_fields(self):
         """
-        Gets all fields in the schema.
+        Gets all fields in the schema. Note - dont use django's order_by since we are caching the fieldschema_set
+        beforehand.
         """
-        return list(self.fieldschema_set.all())
+        return sorted(self.fieldschema_set.all(), key=lambda k: k.field_position)
+
+
+class FieldSchemaType(object):
+    """
+    Specifies all of the field schema types supported.
+    """
+    DATE = 'DATE'
+    DATETIME = 'DATETIME'
+    INT = 'INT'
+    FLOAT = 'FLOAT'
+    STRING = 'STRING'
+
+
+# Create a mapping of the field schema types to their associated python types
+FIELD_SCHEMA_PYTHON_TYPES = {
+    FieldSchemaType.DATE: date,
+    FieldSchemaType.DATETIME: datetime,
+    FieldSchemaType.INT: int,
+    FieldSchemaType.FLOAT: float,
+    FieldSchemaType.STRING: str,
+}
 
 
 class FieldSchema(models.Model):
@@ -62,46 +86,43 @@ class FieldSchema(models.Model):
 
     # The order in which this field appears in the UID for the record. It is null if it does
     # not appear in the uniqueness constraint
-    uniqueness_order = models.PositiveIntegerField(null=True)
+    uniqueness_order = models.IntegerField(null=True)
+
+    # The position of the field. This ordering is relevant when parsing a list of fields into
+    # a dictionary with the field names as keys
+    field_position = models.IntegerField(null=True)
+
+    # The type of field. The available choices are present in the FieldSchemaType class
+    field_type = models.CharField(
+        max_length=32, choices=((field_type, field_type) for field_type in FieldSchemaType.__dict__))
+
+    # If the field is a string and needs to be converted to another type, this string specifies
+    # the format for a field
+    field_format = models.CharField(null=True, blank=True, default=None, max_length=64)
 
     # Use django manager utils to manage FieldSchema objects
     objects = ManagerUtilsManager()
-
-    def get_value(self, obj):
-        """
-        Given an object, return the value of the field in that object.
-        """
-        if type(obj) is dict:
-            return obj[self.field_key]
-        else:
-            return getattr(obj, self.field_key)
 
     def set_value(self, obj, value):
         """
         Given an object, set the value of the field in that object.
         """
-        if type(obj) is dict:
+        if isinstance(obj, list):
+            obj[self.field_position] = value
+        elif isinstance(obj, dict):
             obj[self.field_key] = value
         else:
             setattr(obj, self.field_key, value)
 
-
-class TimeFieldSchema(FieldSchema):
-    """
-    A model that performs additional datetime parsing when obtaining the value of a time field.
-    """
-    # Use django manager utils to manage TimeFieldSchema objects
-    objects = ManagerUtilsManager()
-
     def get_value(self, obj):
         """
-        If an integer time stamp is stored in the time field, convert it into a datetime object.
-        NOTE - we can add time formatting strings here later when supporing parsing of string times.
+        Given an object, return the value of the field in that object.
         """
-        value = super(TimeFieldSchema, self).get_value(obj)
+        if isinstance(obj, list):
+            value = obj[self.field_position]
+        elif isinstance(obj, dict):
+            value = obj[self.field_key]
+        else:
+            value = getattr(obj, self.field_key)
 
-        if type(value) is int:
-            # Convert a time stamp to a datetime object.
-            value = datetime.utcfromtimestamp(value)
-
-        return value
+        return convert_value(FIELD_SCHEMA_PYTHON_TYPES[self.field_type], value, self.field_format)
