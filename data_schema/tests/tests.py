@@ -147,16 +147,46 @@ class FieldSchemaTest(TestCase):
     """
     Tests functionality in the FieldSchema model.
     """
+    def test_set_value_list(self):
+        """
+        Tests setting the value of a list.
+        """
+        field_schema = G(FieldSchema, field_key='field_key', field_position=1)
+        val = ['hello', 'worlds']
+        field_schema.set_value(val, 'world')
+        self.assertEquals(val, ['hello', 'world'])
+
+    def test_set_value_obj(self):
+        """
+        Tests setting the value of an object.
+        """
+        class Input:
+            field_key = 'none'
+        field_schema = G(FieldSchema, field_key='field_key')
+        obj = Input()
+        field_schema.set_value(obj, 'value')
+        self.assertEquals(obj.field_key, 'value')
+
+    def test_set_value_dict(self):
+        """
+        Tests setting the value of a dict.
+        """
+        field_schema = G(FieldSchema, field_key='field_key')
+        val = {'field_key': 'value1'}
+        field_schema.set_value(val, 'value')
+        self.assertEquals(val['field_key'], 'value')
+
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_dict(self, convert_value_mock):
         """
-        Tests the get_value function with a dictionary as input.
+        Tests setting the value of a field when the object is a dictionary.
         """
-        field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format')
-        field_schema.get_value({
-            'field_key': 'value'
-        })
-        convert_value_mock.assert_called_once_with(str, 'value', 'format')
+        field_schema = G(FieldSchema, field_key='field_key')
+        obj = {
+            'field_key': 'none',
+        }
+        field_schema.set_value(obj, 'value')
+        self.assertEquals(obj, {'field_key': 'value'})
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_obj(self, convert_value_mock):

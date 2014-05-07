@@ -84,3 +84,5 @@ string_time_field_schema = FieldSchema.objects.create(
 print string_time_field_schema.get_value(['value', '2013-04-12 12:12:12'])
 2013-04-12 12:12:12
 ```
+
+Note that ``FieldSchema`` objects have an analogous ``set_value`` function for setting the value of a field.

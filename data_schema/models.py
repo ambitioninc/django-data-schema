@@ -2,11 +2,12 @@ from datetime import datetime, date
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from manager_utils import ManagerUtilsManager
 
 from data_schema.convert_value import convert_value
 
 
-class DataSchemaManager(models.Manager):
+class DataSchemaManager(ManagerUtilsManager):
     """
     A model manager for data schemas. Caches related attributes of data schemas.
     """
@@ -98,6 +99,20 @@ class FieldSchema(models.Model):
     # If the field is a string and needs to be converted to another type, this string specifies
     # the format for a field
     field_format = models.CharField(null=True, blank=True, default=None, max_length=64)
+
+    # Use django manager utils to manage FieldSchema objects
+    objects = ManagerUtilsManager()
+
+    def set_value(self, obj, value):
+        """
+        Given an object, set the value of the field in that object.
+        """
+        if isinstance(obj, list):
+            obj[self.field_position] = value
+        elif isinstance(obj, dict):
+            obj[self.field_key] = value
+        else:
+            setattr(obj, self.field_key, value)
 
     def get_value(self, obj):
         """
