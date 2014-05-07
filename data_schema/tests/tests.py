@@ -198,7 +198,7 @@ class FieldSchemaTest(TestCase):
 
         field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format')
         field_schema.get_value(Input())
-        convert_value_mock.assert_called_once_with(str, 'value', 'format')
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format')
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list(self, convert_value_mock):
@@ -207,7 +207,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
-        convert_value_mock.assert_called_once_with(str, 'world', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None)
 
 
 class DateFieldSchemaTest(TestCase):

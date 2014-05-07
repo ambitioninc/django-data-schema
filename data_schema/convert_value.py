@@ -3,8 +3,20 @@ Functions for handling conversions of values from one type to another.
 """
 from datetime import datetime, date
 
+from data_schema.field_schema_type import FieldSchemaType
 
-def convert_value_python_type(python_type, value, format=None):
+
+# Create a mapping of the field schema types to their associated python types
+FIELD_SCHEMA_PYTHON_TYPES = {
+    FieldSchemaType.DATE: date,
+    FieldSchemaType.DATETIME: datetime,
+    FieldSchemaType.INT: int,
+    FieldSchemaType.FLOAT: float,
+    FieldSchemaType.STRING: str,
+}
+
+
+def convert_value_python_type(field_schema_type, value, format=None):
     """
     A generic function for converting the value into a python type.
 
@@ -13,6 +25,8 @@ def convert_value_python_type(python_type, value, format=None):
         print val
         0
     """
+    python_type = FIELD_SCHEMA_PYTHON_TYPES[field_schema_type]
+    
     if not format:
         return python_type(value)
     else:
@@ -21,11 +35,13 @@ def convert_value_python_type(python_type, value, format=None):
         raise NotImplementedError('Format string not applicable to field schema type')
 
 
-def convert_value_datetime_type(datetime_type, value, format=None):
+def convert_value_datetime_type(field_schema_type, value, format=None):
     """
     Converts a value into a date or datetime object. The format parameter is passed to strptime if provided.
     If the value is an integer or float, it assumes it is a UTC timestamp
     """
+    datetime_type = FIELD_SCHEMA_PYTHON_TYPES[field_schema_type]
+
     if isinstance(value, datetime_type):
         # The value is already the appropriate type
         return value
@@ -41,14 +57,14 @@ def convert_value_datetime_type(datetime_type, value, format=None):
         raise NotImplementedError('Unsupported input value for datetime conversion: {0}'.format(value))
 
     # Convert it to a date object if necessary. Otherwise it should already be a datetime object
-    return value.date() if datetime_type is date else value
+    return value.date() if field_schema_type == FieldSchemaType.DATE else value
 
 
-def convert_value(value_type, value, format=None):
+def convert_value(field_schema_type, value, format=None):
     """
     Converts a value to a type with an optional format string.
     """
-    if value_type in (datetime, date):
-        return convert_value_datetime_type(value_type, value, format)
+    if field_schema_type in (FieldSchemaType.DATETIME, FieldSchemaType.DATE):
+        return convert_value_datetime_type(field_schema_type, value, format)
     else:
-        return convert_value_python_type(value_type, value, format)
+        return convert_value_python_type(field_schema_type, value, format)
