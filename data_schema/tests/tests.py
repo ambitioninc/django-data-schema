@@ -1,9 +1,10 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from django.test import TestCase
 from django_dynamic_fixture import G
+from mock import patch
 
-from data_schema.models import DataSchema, FieldSchema, TimeFieldSchema
+from data_schema.models import DataSchema, FieldSchema, FieldSchemaType
 
 
 class DataSchemaTest(TestCase):
@@ -112,6 +113,19 @@ class DataSchemaTest(TestCase):
 
         self.assertEquals(set(data_schema.get_fields()), set([field1, field2, field3]))
 
+    def test_get_fields_with_field_ordering(self):
+        """
+        Tests that obtaining fields with a field position returns them in the proper
+        order.
+        """
+        data_schema = G(DataSchema)
+        field1 = G(FieldSchema, data_schema=data_schema, field_position=2)
+        field2 = G(FieldSchema, data_schema=data_schema, field_position=3)
+        field3 = G(FieldSchema, data_schema=data_schema, field_position=1)
+        G(FieldSchema)
+
+        self.assertEquals(data_schema.get_fields(), [field3, field1, field2])
+
     def test_optimal_queries_get_fields(self):
         """
         Tests that get_fields incurs no additional queries when caching the
@@ -133,45 +147,236 @@ class FieldSchemaTest(TestCase):
     """
     Tests functionality in the FieldSchema model.
     """
-    def test_get_value_dict(self):
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_dict(self, convert_value_mock):
         """
         Tests the get_value function with a dictionary as input.
         """
-        field_schema = G(FieldSchema, field_key='field_key')
-        self.assertEquals(field_schema.get_value({
+        field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format')
+        field_schema.get_value({
             'field_key': 'value'
-        }), 'value')
+        })
+        convert_value_mock.assert_called_once_with(str, 'value', 'format')
 
-    def test_get_value_obj(self):
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_obj(self, convert_value_mock):
         """
         Tests the get_value function with an object as input.
         """
         class Input:
             field_key = 'value'
 
-        field_schema = G(FieldSchema, field_key='field_key')
-        self.assertEquals(field_schema.get_value(Input()), 'value')
+        field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format')
+        field_schema.get_value(Input())
+        convert_value_mock.assert_called_once_with(str, 'value', 'format')
+
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_list(self, convert_value_mock):
+        """
+        Tests the get_value function with a list as input.
+        """
+        field_schema = G(FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING)
+        field_schema.get_value(['hello', 'world'])
+        convert_value_mock.assert_called_once_with(str, 'world', None)
 
 
-class TimeFieldSchemaTest(TestCase):
+class DateFieldSchemaTest(TestCase):
     """
-    Tests functionality in the TimeFieldSchema model.
+    Tests the DATE type for field schemas.
     """
-    def test_get_value_non_int(self):
+    def test_get_value_unsupported(self):
         """
-        Tests the get_value function with a non integer input.
+        Tests getting the value of an unsupported type.
         """
-        field_schema = G(TimeFieldSchema, field_key='field_key')
-        value = datetime(2013, 12, 4)
-        self.assertEquals(field_schema.get_value({
-            'field_key': value
-        }), value)
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
+        with self.assertRaises(NotImplementedError):
+            field_schema.get_value({'time': []})
+
+    def test_get_value_date(self):
+        """
+        Tests getting the value when the input is already a date object.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
+        val = field_schema.get_value({'time': date(2013, 4, 4)})
+        self.assertEquals(val, date(2013, 4, 4))
 
     def test_get_value_int(self):
         """
-        Tests the get_value function with a utc timestamp.
+        Tests getting the date value of an int. Assumed to be a utc timestamp.
         """
-        field_schema = G(TimeFieldSchema, field_key='field_key')
-        self.assertEquals(field_schema.get_value({
-            'field_key': 1396396800
-        }), datetime(2014, 4, 2))
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
+        val = field_schema.get_value({'time': 1399486805})
+        self.assertEquals(val, date(2014, 5, 7))
+
+    def test_get_value_float(self):
+        """
+        Tests getting the date value of an float. Assumed to be a utc timestamp.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
+        val = field_schema.get_value({'time': 1399486805.0})
+        self.assertEquals(val, date(2014, 5, 7))
+
+    def test_get_value_formatted(self):
+        """
+        Tests getting a formatted date value.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
+        val = field_schema.get_value({'time': '2013-04-05'})
+        self.assertEquals(val, date(2013, 4, 5))
+
+
+class DatetimeFieldSchemaTest(TestCase):
+    """
+    Tests the DATETIME type for field schemas.
+    """
+    def test_get_value_unsupported(self):
+        """
+        Tests getting the value of an unsupported type.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
+        with self.assertRaises(NotImplementedError):
+            field_schema.get_value({'time': []})
+
+    def test_get_value_date(self):
+        """
+        Tests getting the value when the input is already a date object.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
+        val = field_schema.get_value({'time': datetime(2013, 4, 4)})
+        self.assertEquals(val, datetime(2013, 4, 4))
+
+    def test_get_value_int(self):
+        """
+        Tests getting the date value of an int. Assumed to be a utc timestamp.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
+        val = field_schema.get_value({'time': 1399486805})
+        self.assertEquals(val, datetime(2014, 5, 7, 18, 20, 5))
+
+    def test_get_value_float(self):
+        """
+        Tests getting the date value of an float. Assumed to be a utc timestamp.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
+        val = field_schema.get_value({'time': 1399486805.0})
+        self.assertEquals(val, datetime(2014, 5, 7, 18, 20, 5))
+
+    def test_get_value_formatted(self):
+        """
+        Tests getting a formatted date value.
+        """
+        field_schema = G(
+            FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, field_format='%Y-%m-%d %H:%M:%S')
+        val = field_schema.get_value({'time': '2013-04-05 12:12:12'})
+        self.assertEquals(val, datetime(2013, 4, 5, 12, 12, 12))
+
+
+class IntFieldSchemaTest(TestCase):
+    """
+    Tests the INT type for field schemas.
+    """
+    def test_get_value_unsupported(self):
+        """
+        Tests getting the value with an unsupported format.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT, field_format='a')
+        with self.assertRaises(NotImplementedError):
+            field_schema.get_value({'val': '1'})
+
+    def test_get_value_str(self):
+        """
+        Tests getting the value when the input is a string.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
+        val = field_schema.get_value({'val': '1'})
+        self.assertEquals(val, 1)
+
+    def test_get_value_int(self):
+        """
+        Tests getting the value when it is an int.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
+        val = field_schema.get_value({'val': 5})
+        self.assertEquals(val, 5)
+
+    def test_get_value_float(self):
+        """
+        Tests getting the date value of a float.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
+        val = field_schema.get_value({'val': 5.2})
+        self.assertEquals(val, 5)
+
+
+class StringFieldSchemaTest(TestCase):
+    """
+    Tests the STRING type for field schemas.
+    """
+    def test_get_value_unsupported(self):
+        """
+        Tests getting the value with an unsupported format.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='a')
+        with self.assertRaises(NotImplementedError):
+            field_schema.get_value({'val': '1'})
+
+    def test_get_value_str(self):
+        """
+        Tests getting the value when the input is a string.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
+        val = field_schema.get_value({'val': '1'})
+        self.assertEquals(val, '1')
+
+    def test_get_value_int(self):
+        """
+        Tests getting the value when it is an int.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
+        val = field_schema.get_value({'val': 5})
+        self.assertEquals(val, '5')
+
+    def test_get_value_float(self):
+        """
+        Tests getting the date value of a float.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
+        val = field_schema.get_value({'val': 5.2})
+        self.assertEquals(val, '5.2')
+
+
+class FloatFieldSchemaTest(TestCase):
+    """
+    Tests the FLOAT type for field schemas.
+    """
+    def test_get_value_unsupported(self):
+        """
+        Tests getting the value with an unsupported format.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT, field_format='a')
+        with self.assertRaises(NotImplementedError):
+            field_schema.get_value({'val': '1'})
+
+    def test_get_value_str(self):
+        """
+        Tests getting the value when the input is a string.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': '1'})
+        self.assertAlmostEquals(val, 1.0)
+
+    def test_get_value_int(self):
+        """
+        Tests getting the value when it is an int.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': 5})
+        self.assertAlmostEquals(val, 5.0)
+
+    def test_get_value_float(self):
+        """
+        Tests getting the date value of a float.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': 5.2})
+        self.assertAlmostEquals(val, 5.2)
