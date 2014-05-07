@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime
 
 from django.test import TestCase
 from django_dynamic_fixture import G
@@ -227,8 +227,8 @@ class DateFieldSchemaTest(TestCase):
         Tests getting the value when the input is already a date object.
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
-        val = field_schema.get_value({'time': date(2013, 4, 4)})
-        self.assertEquals(val, date(2013, 4, 4))
+        val = field_schema.get_value({'time': datetime(2013, 4, 4)})
+        self.assertEquals(val, datetime(2013, 4, 4))
 
     def test_get_value_int(self):
         """
@@ -236,7 +236,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
         val = field_schema.get_value({'time': 1399486805})
-        self.assertEquals(val, date(2014, 5, 7))
+        self.assertEquals(val, datetime(2014, 5, 7, 18, 20, 5))
 
     def test_get_value_float(self):
         """
@@ -244,7 +244,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
         val = field_schema.get_value({'time': 1399486805.0})
-        self.assertEquals(val, date(2014, 5, 7))
+        self.assertEquals(val, datetime(2014, 5, 7, 18, 20, 5))
 
     def test_get_value_formatted(self):
         """
@@ -252,7 +252,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
         val = field_schema.get_value({'time': '2013-04-05'})
-        self.assertEquals(val, date(2013, 4, 5))
+        self.assertEquals(val, datetime(2013, 4, 5))
 
 
 class DatetimeFieldSchemaTest(TestCase):
