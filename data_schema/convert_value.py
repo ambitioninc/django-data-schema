@@ -26,7 +26,7 @@ def convert_value_python_type(field_schema_type, value, format=None):
         0
     """
     python_type = FIELD_SCHEMA_PYTHON_TYPES[field_schema_type]
-    
+
     if not format:
         return python_type(value)
     else:
