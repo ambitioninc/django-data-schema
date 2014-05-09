@@ -48,6 +48,28 @@ class DataSchema(models.Model):
         """
         return sorted(self.fieldschema_set.all(), key=lambda k: k.field_position)
 
+    def _get_field_map(self):
+        """
+        Returns a cached mapping of field keys to their field schemas.
+        """
+        if not hasattr(self, '_field_map'):
+            self._field_map = {
+                field.field_key: field for field in self.get_fields()
+            }
+        return self._field_map
+
+    def get_value(self, obj, field_key):
+        """
+        Given an object and a field key, return the value of the field in the object.
+        """
+        return self._get_field_map()[field_key].get_value(obj)
+
+    def set_value(self, obj, field_key, value):
+        """
+        Given an object and a field key, set the value of the field in the object.
+        """
+        return self._get_field_map()[field_key].set_value(obj, value)
+
 
 class FieldSchema(models.Model):
     """
