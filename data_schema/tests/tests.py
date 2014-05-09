@@ -142,6 +142,92 @@ class DataSchemaTest(TestCase):
         with self.assertNumQueries(0):
             self.assertEquals(set(data_schema.get_fields()), set([field1, field3, field2]))
 
+    def test_set_value_list(self):
+        """
+        Tests setting the value of a list.
+        """
+        data_schema = G(DataSchema)
+        G(FieldSchema, data_schema=data_schema, field_key='field_key', field_position=1)
+        val = ['hello', 'worlds']
+        data_schema.set_value(val, 'field_key', 'world')
+        self.assertEquals(val, ['hello', 'world'])
+
+    def test_set_value_obj(self):
+        """
+        Tests setting the value of an object.
+        """
+        class Input:
+            field_key = 'none'
+        data_schema = G(DataSchema)
+        G(FieldSchema, data_schema=data_schema, field_key='field_key')
+        obj = Input()
+        data_schema.set_value(obj, 'field_key', 'value')
+        self.assertEquals(obj.field_key, 'value')
+
+    def test_set_value_dict(self):
+        """
+        Tests setting the value of a dict.
+        """
+        data_schema = G(DataSchema)
+        G(FieldSchema, data_schema=data_schema, field_key='field_key')
+        val = {'field_key': 'value1'}
+        data_schema.set_value(val, 'field_key', 'value')
+        self.assertEquals(val['field_key'], 'value')
+
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_dict(self, convert_value_mock):
+        """
+        Tests getting the value of a field when the object is a dictionary.
+        """
+        data_schema = G(DataSchema)
+        G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, data_schema=data_schema)
+        obj = {
+            'field_key': 'value',
+        }
+        data_schema.get_value(obj, 'field_key')
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', None)
+
+    def test_get_value_dict_cached(self):
+        """
+        Tests getting the value of a field twice (i.e. the cache gets used)
+        """
+        data_schema = G(DataSchema)
+        G(FieldSchema, field_key='field_key', data_schema=data_schema, field_type=FieldSchemaType.STRING)
+        obj = {
+            'field_key': 'none',
+        }
+        value = data_schema.get_value(obj, 'field_key')
+        self.assertEquals(value, 'none')
+        value = data_schema.get_value(obj, 'field_key')
+        self.assertEquals(value, 'none')
+
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_obj(self, convert_value_mock):
+        """
+        Tests the get_value function with an object as input.
+        """
+        class Input:
+            field_key = 'value'
+
+        data_schema = G(DataSchema)
+        G(
+            FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format',
+            data_schema=data_schema)
+        data_schema.get_value(Input(), 'field_key')
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format')
+
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_list(self, convert_value_mock):
+        """
+        Tests the get_value function with a list as input.
+        """
+        data_schema = G(DataSchema)
+        G(
+            FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING,
+            data_schema=data_schema)
+        data_schema.get_value(['hello', 'world'], 'field_key')
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None)
+
 
 class FieldSchemaTest(TestCase):
     """
