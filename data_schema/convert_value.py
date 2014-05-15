@@ -34,17 +34,6 @@ def convert_value_python_type(field_schema_type, value):
     return python_type(value)
 
 
-def convert_value_string(field_schema_type, value):
-    """
-    Converts string values into its python type.
-    """
-    if isinstance(value, str):
-        # Always strip out whitespace on strings
-        value = value.strip()
-
-    return convert_value_python_type(field_schema_type, value)
-
-
 def convert_value_numeric(field_schema_type, value):
     """
     Converts a numeric value into its python type.
@@ -82,9 +71,13 @@ def convert_value(field_schema_type, value, format_str=None):
     """
     Converts a value to a type with an optional format string.
     """
+    # Strip all strings of traling and leading whitespace
+    if isinstance(value, str):
+        value = value.strip()
+
     if field_schema_type in (FieldSchemaType.DATETIME, FieldSchemaType.DATE):
         return convert_value_datetime_type(field_schema_type, value, format_str)
     elif field_schema_type in (FieldSchemaType.INT, FieldSchemaType.FLOAT):
         return convert_value_numeric(field_schema_type, value)
     else:
-        return convert_value_string(field_schema_type, value)
+        return convert_value_python_type(field_schema_type, value)

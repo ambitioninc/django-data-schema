@@ -300,6 +300,14 @@ class DateFieldSchemaTest(TestCase):
     """
     Tests the DATE type for field schemas.
     """
+    def test_padded_date_with_format(self):
+        """
+        Tests a date that is padded and has a format string.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
+        val = field_schema.get_value({'time': '    2013-04-05     '})
+        self.assertEquals(val, datetime(2013, 4, 5))
+
     def test_get_value_unsupported(self):
         """
         Tests getting the value of an unsupported type.
