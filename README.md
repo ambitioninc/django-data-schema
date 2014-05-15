@@ -91,7 +91,7 @@ Note that if you are parsing numerical fields, Django data schema will strip out
 revenue_field_schema = FieldSchema.objects.create(
     data_schema=data_schema, field_key='revenue', field_type=FieldSchemaType.FLOAT)
 
-print revenue_field_schema.get_value({'value': '$15,000,456.23'})
+print revenue_field_schema.get_value({'revenue': '$15,000,456.23'})
 15000456.23
 ```
 
