@@ -85,4 +85,15 @@ print string_time_field_schema.get_value(['value', '2013-04-12 12:12:12'])
 2013-04-12 12:12:12
 ```
 
+Note that if you are parsing numerical fields, Django data schema will strip out any non-numerical values, allowing the user to get values of currency-based numbers and other formats.
+
+```python
+revenue_field_schema = FieldSchema.objects.create(
+    data_schema=data_schema, field_key='revenue', field_type=FieldSchemaType.FLOAT)
+
+print revenue_field_schema.get_value({'revenue': '$15,000,456.23'})
+15000456.23
+```
+
+
 Note that ``FieldSchema`` objects have an analogous ``set_value`` function for setting the value of a field.
