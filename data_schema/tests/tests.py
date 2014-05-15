@@ -428,13 +428,14 @@ class StringFieldSchemaTest(TestCase):
     """
     Tests the STRING type for field schemas.
     """
-    def test_get_value_unsupported(self):
+    def test_strip_whitespaces(self):
         """
-        Tests getting the value with an unsupported format.
+        Tests that getting a string results in its leading and trailing whitespace being
+        stripped.
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='a')
-        with self.assertRaises(NotImplementedError):
-            field_schema.get_value({'val': '1'})
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
+        val = field_schema.get_value({'val': '   1 2  3    '})
+        self.assertEquals(val, '1 2  3')
 
     def test_get_value_str(self):
         """

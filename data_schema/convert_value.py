@@ -20,7 +20,7 @@ FIELD_SCHEMA_PYTHON_TYPES = {
 NUMERIC_REGEX = re.compile(r'[^\d.]+')
 
 
-def convert_value_python_type(field_schema_type, value, format=None):
+def convert_value_python_type(field_schema_type, value):
     """
     A generic function for converting the value into a python type.
 
@@ -31,12 +31,18 @@ def convert_value_python_type(field_schema_type, value, format=None):
     """
     python_type = FIELD_SCHEMA_PYTHON_TYPES[field_schema_type]
 
-    if not format:
-        return python_type(value)
-    else:
-        # TODO support format strings for integers and other types using the parse library
-        # (https://github.com/r1chardj0n3s/parse)
-        raise NotImplementedError('Format string not applicable to field schema type')
+    return python_type(value)
+
+
+def convert_value_string(field_schema_type, value):
+    """
+    Converts string values into its python type.
+    """
+    if isinstance(value, str):
+        # Always strip out whitespace on strings
+        value = value.strip()
+
+    return convert_value_python_type(field_schema_type, value)
 
 
 def convert_value_numeric(field_schema_type, value):
@@ -50,7 +56,7 @@ def convert_value_numeric(field_schema_type, value):
     return convert_value_python_type(field_schema_type, value)
 
 
-def convert_value_datetime_type(field_schema_type, value, format=None):
+def convert_value_datetime_type(field_schema_type, value, format_str=None):
     """
     Converts a value into a date or datetime object. The format parameter is passed to strptime if provided.
     If the value is an integer or float, it assumes it is a UTC timestamp
@@ -64,21 +70,21 @@ def convert_value_datetime_type(field_schema_type, value, format=None):
     if isinstance(value, int) or isinstance(value, float):
         # Return a timestamp if the value is an integer or float
         return datetime.utcfromtimestamp(value)
-    elif format:
+    elif format_str:
         # If there is a format specified, assume the value is a string
-        return datetime.strptime(value, format)
+        return datetime.strptime(value, format_str)
     else:
         # If there is no format specifi
         raise NotImplementedError('Unsupported input value for datetime conversion: {0}'.format(value))
 
 
-def convert_value(field_schema_type, value, format=None):
+def convert_value(field_schema_type, value, format_str=None):
     """
     Converts a value to a type with an optional format string.
     """
     if field_schema_type in (FieldSchemaType.DATETIME, FieldSchemaType.DATE):
-        return convert_value_datetime_type(field_schema_type, value, format)
+        return convert_value_datetime_type(field_schema_type, value, format_str)
     elif field_schema_type in (FieldSchemaType.INT, FieldSchemaType.FLOAT):
         return convert_value_numeric(field_schema_type, value)
     else:
-        return convert_value_python_type(field_schema_type, value, format)
+        return convert_value_string(field_schema_type, value)
