@@ -391,13 +391,13 @@ class IntFieldSchemaTest(TestCase):
     """
     Tests the INT type for field schemas.
     """
-    def test_get_value_unsupported(self):
+    def test_get_value_non_numeric_str(self):
         """
-        Tests getting the value with an unsupported format.
+        Tests getting the value of a string that has currency information.
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT, field_format='a')
-        with self.assertRaises(NotImplementedError):
-            field_schema.get_value({'val': '1'})
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
+        val = field_schema.get_value({'val': ' $15,000,456 Dollars '})
+        self.assertAlmostEquals(val, 15000456)
 
     def test_get_value_str(self):
         """
@@ -465,13 +465,13 @@ class FloatFieldSchemaTest(TestCase):
     """
     Tests the FLOAT type for field schemas.
     """
-    def test_get_value_unsupported(self):
+    def test_get_value_non_numeric_str(self):
         """
-        Tests getting the value with an unsupported format.
+        Tests getting the value of a string that has currency information.
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT, field_format='a')
-        with self.assertRaises(NotImplementedError):
-            field_schema.get_value({'val': '1'})
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': ' $15,000,456.34 Dollars '})
+        self.assertAlmostEquals(val, 15000456.34)
 
     def test_get_value_str(self):
         """

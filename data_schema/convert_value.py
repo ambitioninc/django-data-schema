@@ -2,6 +2,7 @@
 Functions for handling conversions of values from one type to another.
 """
 from datetime import datetime
+import re
 
 from data_schema.field_schema_type import FieldSchemaType
 
@@ -14,6 +15,9 @@ FIELD_SCHEMA_PYTHON_TYPES = {
     FieldSchemaType.FLOAT: float,
     FieldSchemaType.STRING: str,
 }
+
+# A compiled regex for extracting numeric characters
+NUMERIC_REGEX = re.compile(r'[^\d.]+')
 
 
 def convert_value_python_type(field_schema_type, value, format=None):
@@ -33,6 +37,17 @@ def convert_value_python_type(field_schema_type, value, format=None):
         # TODO support format strings for integers and other types using the parse library
         # (https://github.com/r1chardj0n3s/parse)
         raise NotImplementedError('Format string not applicable to field schema type')
+
+
+def convert_value_numeric(field_schema_type, value):
+    """
+    Converts a numeric value into its python type.
+    """
+    if isinstance(value, str):
+        # Strip out any non-numeric characters if it is a string.
+        value = NUMERIC_REGEX.sub('', value)
+
+    return convert_value_python_type(field_schema_type, value)
 
 
 def convert_value_datetime_type(field_schema_type, value, format=None):
@@ -63,5 +78,7 @@ def convert_value(field_schema_type, value, format=None):
     """
     if field_schema_type in (FieldSchemaType.DATETIME, FieldSchemaType.DATE):
         return convert_value_datetime_type(field_schema_type, value, format)
+    elif field_schema_type in (FieldSchemaType.INT, FieldSchemaType.FLOAT):
+        return convert_value_numeric(field_schema_type, value)
     else:
         return convert_value_python_type(field_schema_type, value, format)
