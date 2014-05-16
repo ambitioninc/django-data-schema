@@ -52,7 +52,6 @@ def convert_value_string_type(field_schema_type, value, format_str=None):
     if isinstance(value, str):
         value = value.strip()
         if format_str:
-            print format_str, value, re.match(format_str, value)
             value = value if re.match(format_str, value) else None
 
     return FIELD_SCHEMA_PYTHON_TYPES[field_schema_type](value) if value is not None else None

@@ -484,6 +484,24 @@ class StringFieldSchemaTest(TestCase):
         val = field_schema.get_value({'val': '23,45'})
         self.assertEquals(val, None)
 
+    def test_matching_format_limit_length(self):
+        """
+        Tests returning a string that matches a format of a limited length number.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='^[\d]{1,5}$')
+        val = field_schema.get_value({'val': '2345'})
+        self.assertEquals(val, '2345')
+        val = field_schema.get_value({'val': '23456'})
+        self.assertEquals(val, '23456')
+
+    def test_non_matching_format_limit_length(self):
+        """
+        Tests returning a string that matches a format of a limited length number.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='^[\d]{1,5}$')
+        val = field_schema.get_value({'val': '234567'})
+        self.assertEquals(val, None)
+
     def test_none(self):
         """
         Tests getting a value of None.
