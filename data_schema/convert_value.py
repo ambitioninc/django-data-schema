@@ -71,9 +71,12 @@ def convert_value(field_schema_type, value, format_str=None):
     """
     Converts a value to a type with an optional format string.
     """
-    # Strip all strings of traling and leading whitespace
     if isinstance(value, str):
+        # Strip all strings of traling and leading whitespace
         value = value.strip()
+    elif value is None:
+        # Return None if the value is None
+        return None
 
     if field_schema_type in (FieldSchemaType.DATETIME, FieldSchemaType.DATE):
         return convert_value_datetime_type(field_schema_type, value, format_str)
