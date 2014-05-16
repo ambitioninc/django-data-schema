@@ -308,6 +308,14 @@ class DateFieldSchemaTest(TestCase):
         val = field_schema.get_value({'time': None})
         self.assertEquals(val, None)
 
+    def test_blank(self):
+        """
+        Tests blank strings of input.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
+        val = field_schema.get_value({'time': '   '})
+        self.assertEquals(val, None)
+
     def test_padded_date_with_format(self):
         """
         Tests a date that is padded and has a format string.
@@ -315,14 +323,6 @@ class DateFieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
         val = field_schema.get_value({'time': '    2013-04-05     '})
         self.assertEquals(val, datetime(2013, 4, 5))
-
-    def test_get_value_unsupported(self):
-        """
-        Tests getting the value of an unsupported type.
-        """
-        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
-        with self.assertRaises(NotImplementedError):
-            field_schema.get_value({'time': []})
 
     def test_get_value_date(self):
         """
@@ -369,13 +369,13 @@ class DatetimeFieldSchemaTest(TestCase):
         val = field_schema.get_value({'time': None})
         self.assertEquals(val, None)
 
-    def test_get_value_unsupported(self):
+    def test_blank(self):
         """
-        Tests getting the value of an unsupported type.
+        Tests blank strings of input.
         """
-        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
-        with self.assertRaises(NotImplementedError):
-            field_schema.get_value({'time': []})
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, field_format='%Y-%m-%d')
+        val = field_schema.get_value({'time': '   '})
+        self.assertEquals(val, None)
 
     def test_get_value_date(self):
         """
@@ -423,6 +423,14 @@ class IntFieldSchemaTest(TestCase):
         val = field_schema.get_value({'val': None})
         self.assertEquals(val, None)
 
+    def test_blank(self):
+        """
+        Tests blank strings of input.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
+        val = field_schema.get_value({'val': '   '})
+        self.assertEquals(val, None)
+
     def test_get_value_non_numeric_str(self):
         """
         Tests getting the value of a string that has currency information.
@@ -468,6 +476,15 @@ class StringFieldSchemaTest(TestCase):
         val = field_schema.get_value({'val': None})
         self.assertEquals(val, None)
 
+    def test_blank(self):
+        """
+        Tests blank strings of input. Contrary to other formats, the string field schema
+        returns a blank string instead of None (since blank strings are valid strings).
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
+        val = field_schema.get_value({'val': '    '})
+        self.assertEquals(val, '')
+
     def test_strip_whitespaces(self):
         """
         Tests that getting a string results in its leading and trailing whitespace being
@@ -512,6 +529,14 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': None})
+        self.assertEquals(val, None)
+
+    def test_blank(self):
+        """
+        Tests blank strings of input.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': '   '})
         self.assertEquals(val, None)
 
     def test_get_value_non_numeric_str(self):
