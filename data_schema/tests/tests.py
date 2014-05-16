@@ -468,6 +468,22 @@ class StringFieldSchemaTest(TestCase):
     """
     Tests the STRING type for field schemas.
     """
+    def test_matching_format(self):
+        """
+        Tests returning a string that matches a format.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='^[\d\.]+$')
+        val = field_schema.get_value({'val': '23.45'})
+        self.assertEquals(val, '23.45')
+
+    def test_non_matching_format(self):
+        """
+        Tests returning a string that matches a format.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='^[\d\.]+$')
+        val = field_schema.get_value({'val': '23,45'})
+        self.assertEquals(val, None)
+
     def test_none(self):
         """
         Tests getting a value of None.
