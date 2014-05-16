@@ -300,6 +300,14 @@ class DateFieldSchemaTest(TestCase):
     """
     Tests the DATE type for field schemas.
     """
+    def test_none(self):
+        """
+        Tests getting a value of None.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
+        val = field_schema.get_value({'time': None})
+        self.assertEquals(val, None)
+
     def test_padded_date_with_format(self):
         """
         Tests a date that is padded and has a format string.
@@ -353,6 +361,14 @@ class DatetimeFieldSchemaTest(TestCase):
     """
     Tests the DATETIME type for field schemas.
     """
+    def test_none(self):
+        """
+        Tests getting a value of None.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, field_format='%Y-%m-%d')
+        val = field_schema.get_value({'time': None})
+        self.assertEquals(val, None)
+
     def test_get_value_unsupported(self):
         """
         Tests getting the value of an unsupported type.
@@ -399,6 +415,14 @@ class IntFieldSchemaTest(TestCase):
     """
     Tests the INT type for field schemas.
     """
+    def test_none(self):
+        """
+        Tests getting a value of None.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
+        val = field_schema.get_value({'val': None})
+        self.assertEquals(val, None)
+
     def test_get_value_non_numeric_str(self):
         """
         Tests getting the value of a string that has currency information.
@@ -436,6 +460,14 @@ class StringFieldSchemaTest(TestCase):
     """
     Tests the STRING type for field schemas.
     """
+    def test_none(self):
+        """
+        Tests getting a value of None.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
+        val = field_schema.get_value({'val': None})
+        self.assertEquals(val, None)
+
     def test_strip_whitespaces(self):
         """
         Tests that getting a string results in its leading and trailing whitespace being
@@ -474,6 +506,14 @@ class FloatFieldSchemaTest(TestCase):
     """
     Tests the FLOAT type for field schemas.
     """
+    def test_none(self):
+        """
+        Tests getting a value of None.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': None})
+        self.assertEquals(val, None)
+
     def test_get_value_non_numeric_str(self):
         """
         Tests getting the value of a string that has currency information.
