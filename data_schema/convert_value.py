@@ -20,11 +20,25 @@ FIELD_SCHEMA_PYTHON_TYPES = {
 NON_NUMERIC_REGEX = re.compile(r'[^\d\.]+')
 
 
+def is_string(value):
+    """
+    Returns True if the value is a string.
+    """
+    return isinstance(value, (str, unicode))
+
+
+def is_numeric(value):
+    """
+    Returns True if the value is numeric.
+    """
+    return isinstance(value, (int, float, long, complex))
+
+
 def convert_value_numeric(field_schema_type, value):
     """
     Converts a numeric value into its python type.
     """
-    if isinstance(value, str):
+    if is_string(value):
         # Strip out any non-numeric characters if it is a string.
         value = NON_NUMERIC_REGEX.sub('', value) or None
 
@@ -36,9 +50,9 @@ def convert_value_datetime_type(field_schema_type, value, format_str=None):
     Converts a value into a date or datetime object. The format parameter is passed to strptime if provided.
     If the value is an integer or float, it assumes it is a UTC timestamp
     """
-    if isinstance(value, (int, float)):
+    if is_numeric(value):
         return datetime.utcfromtimestamp(value)
-    elif isinstance(value, str):
+    elif is_string(value):
         value = value.strip()
         return datetime.strptime(value, format_str or '%s') if value else None
     else:
@@ -49,12 +63,12 @@ def convert_value_string_type(field_schema_type, value, format_str=None):
     """
     Converts a value to a string object.
     """
-    if isinstance(value, str):
+    if is_string(value):
         value = value.strip()
         if format_str:
             value = value if re.match(format_str, value) else None
 
-    return FIELD_SCHEMA_PYTHON_TYPES[field_schema_type](value) if value is not None else None
+    return str(value) if value is not None else None
 
 
 def convert_value(field_schema_type, value, format_str=None):
