@@ -4,6 +4,10 @@ Functions for handling conversions of values from one type to another.
 from datetime import datetime
 import re
 
+from dateutil.parser import parse
+import fleming
+import pytz
+
 from data_schema.field_schema_type import FieldSchemaType
 
 
@@ -50,13 +54,24 @@ def convert_value_datetime_type(field_schema_type, value, format_str=None):
     Converts a value into a date or datetime object. The format parameter is passed to strptime if provided.
     If the value is an integer or float, it assumes it is a UTC timestamp
     """
+    dt = None
+
     if is_numeric(value):
-        return datetime.utcfromtimestamp(value)
+        dt = datetime.utcfromtimestamp(value)
     elif is_string(value):
-        value = value.strip()
-        return datetime.strptime(value, format_str or '%s') if value else None
+        if value:
+            if format_str:
+                dt = datetime.strptime(value, format_str)
+            else:
+                dt = parse(value)
     else:
-        return value
+        dt = value
+
+    # Convert any aware datetime objects to naive utc
+    if dt is not None and dt.tzinfo is not None:
+        return fleming.convert_to_tz(dt, pytz.utc, return_naive=True)
+    else:
+        return dt
 
 
 def convert_value_string_type(field_schema_type, value, format_str=None):
@@ -64,7 +79,6 @@ def convert_value_string_type(field_schema_type, value, format_str=None):
     Converts a value to a string object.
     """
     if is_string(value):
-        value = value.strip()
         if format_str:
             value = value if re.match(format_str, value) else None
 
@@ -75,6 +89,10 @@ def convert_value(field_schema_type, value, format_str=None):
     """
     Converts a value to a type with an optional format string.
     """
+    if is_string(value):
+        # Strip any strings
+        value = value.strip()
+
     if field_schema_type in (FieldSchemaType.DATETIME, FieldSchemaType.DATE):
         return convert_value_datetime_type(field_schema_type, value, format_str)
     elif field_schema_type in (FieldSchemaType.INT, FieldSchemaType.FLOAT):
