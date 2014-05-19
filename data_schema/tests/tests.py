@@ -3,6 +3,7 @@ from datetime import datetime
 from django.test import TestCase
 from django_dynamic_fixture import G
 from mock import patch
+import pytz
 
 from data_schema.models import DataSchema, FieldSchema, FieldSchemaType
 
@@ -300,6 +301,14 @@ class DateFieldSchemaTest(TestCase):
     """
     Tests the DATE type for field schemas.
     """
+    def test_no_format_string(self):
+        """
+        Tests when there is a string input with no format string.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
+        val = field_schema.get_value({'time': '2013/04/02 9:25 PM'})
+        self.assertEquals(val, datetime(2013, 4, 2, 21, 25))
+
     def test_none(self):
         """
         Tests getting a value of None.
@@ -361,6 +370,30 @@ class DatetimeFieldSchemaTest(TestCase):
     """
     Tests the DATETIME type for field schemas.
     """
+    def test_no_format_string(self):
+        """
+        Tests when there is a string input with no format string.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
+        val = field_schema.get_value({'time': '2013/04/02 9:25 PM'})
+        self.assertEquals(val, datetime(2013, 4, 2, 21, 25))
+
+    def test_datetime_with_tz_dateutil(self):
+        """
+        Tests that a datetime with a tz is converted back to naive UTC after using dateutil for parsing.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
+        val = field_schema.get_value({'time': '2013/04/02 09:25:00+0400'})
+        self.assertEquals(val, datetime(2013, 4, 2, 5, 25))
+
+    def test_datetime_with_tz(self):
+        """
+        Tests that a datetime with a tz is converted back to naive UTC.
+        """
+        field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
+        val = field_schema.get_value({'time': datetime(2013, 4, 2, 9, 25, tzinfo=pytz.utc)})
+        self.assertEquals(val, datetime(2013, 4, 2, 9, 25))
+
     def test_none(self):
         """
         Tests getting a value of None.
