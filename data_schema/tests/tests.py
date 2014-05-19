@@ -410,6 +410,15 @@ class DatetimeFieldSchemaTest(TestCase):
         val = field_schema.get_value({'time': '2013-04-05 12:12:12'})
         self.assertEquals(val, datetime(2013, 4, 5, 12, 12, 12))
 
+    def test_get_value_formatted_unicode(self):
+        """
+        Tests getting a formatted date in unicode.
+        """
+        field_schema = G(
+            FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, field_format='%Y-%m-%d %H:%M:%S')
+        val = field_schema.get_value({'time': u'2013-04-05 12:12:12'})
+        self.assertEquals(val, datetime(2013, 4, 5, 12, 12, 12))
+
 
 class IntFieldSchemaTest(TestCase):
     """
@@ -468,6 +477,14 @@ class StringFieldSchemaTest(TestCase):
     """
     Tests the STRING type for field schemas.
     """
+    def test_unicode_input(self):
+        """
+        Unicode should be handled properly.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
+        val = field_schema.get_value({'val': u'    '})
+        self.assertEquals(val, '')
+
     def test_matching_format(self):
         """
         Tests returning a string that matches a format.
@@ -579,6 +596,14 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': ' $15,000,456.34 Dollars '})
+        self.assertAlmostEquals(val, 15000456.34)
+
+    def test_get_value_non_numeric_unicode(self):
+        """
+        Tests getting the value of a unicode object that has currency information.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': u' $15,000,456.34 Dollars '})
         self.assertAlmostEquals(val, 15000456.34)
 
     def test_get_value_str(self):
