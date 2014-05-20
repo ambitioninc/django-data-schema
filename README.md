@@ -6,7 +6,11 @@ Django data schema is a lightweight Django app for defining the schema for a mod
 By describing a schema on a piece of data, this allows other applications to easily reference
 fields of models or fields in dictionaries (or their related json fields).
 
-Django data schema also takes care of all converstions underneath the hood, such as parsing datetime strings, converting strings to numerical values, using default values when values don't exist, and so on.
+Django data schema also takes care of all conversions under the hood, such as parsing datetime strings, converting strings to numeric values, using default values when values don't exist, and so on.
+
+1. [Installation](Installation)
+2. [Model Overview](Model Overview)
+3. [Examples](Examples)
 
 # Installation
 
@@ -14,13 +18,13 @@ Django data schema also takes care of all converstions underneath the hood, such
 pip install django-data-schema
 ```
 
-# Basic Usage
+# Model Overview
 Django data schema defines three models for building schemas on data. These models are ``DataSchema`` and
 ``FieldSchema``.
 
 The ``DataSchema`` model provides a ``model_content_type`` field that points to a Django ``ContentType`` model.
-This field represents which object this schema is modeling. If the field is left Null, it is assumed that
-this schema models a dictionary.
+This field represents which object this schema is modeling. If the field is None, it is assumed that
+this schema models an object such as a dictionary or list.
 
 After the enclosing ``DataSchema`` has been defined, various ``FieldSchema`` models can reference the main
 data schema. ``FieldSchema`` models provide the following attributes:
@@ -42,7 +46,7 @@ A ``FieldSchema`` object must specify its data type, which can be any of the typ
 - FieldSchemaType.STRING: A python ``str``.
 - FieldSchemaType.BOOLEAN: A python ``bool``.
 
-Note that these fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the get_value function operates are detailed below.
+Note that these fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the ``get_value`` function operates are detailed below.
 
 ## Using get_value on DATE or DATETIME fields
 The ``get_value`` function has the following behavior on DATE and DATETIME fields:
@@ -56,14 +60,14 @@ The ``get_value`` function has the following behavior on DATE and DATETIME field
 The ``get_value`` function has the following behavior on INT and FLOAT fields:
 
 - If called on a ``string`` or ``unicode`` value, the string will be stripped of all non-numeric numbers except for periods. If the string is blank, the default value (or None) will be returned. If not, the string will then be passed to ``int()`` or ``float()``.
-- If called on an ``int`` or ``float``, the value will be passed to the ``int()`` or ``float()`` converstion.
+- If called on an ``int`` or ``float``, the value will be passed to the ``int()`` or ``float()`` function.
 - No other values can be converted. The ``field_format`` parameter is ignored.
 - If called on None, the default value (or None) is returned.
 
 ## Using get_value on a STRING field
 The ``get_value`` function has the following behavior on a STRING field:
 
-- If called on a ``string`` or ``unicode`` value, the string will be stripped of all trailing and leading whitespace. If a field_format is specified, the string is then be matched to the regex. If it passes, the string is returned. If not, None is returned and the default value is used (or None).
+- If called on a ``string`` or ``unicode`` value, the string will be stripped of all trailing and leading whitespace. If a ``field_format`` is specified, the string is then be matched to the regex. If it passes, the string is returned. If not, None is returned and the default value is used (or None).
 - All other types are passed to the ``str()`` function.
 - If called on None, the default value (or None) is returned.
 
