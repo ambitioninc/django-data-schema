@@ -8,9 +8,9 @@ fields of models or fields in dictionaries (or their related json fields).
 
 Django data schema also takes care of all conversions under the hood, such as parsing datetime strings, converting strings to numeric values, using default values when values don't exist, and so on.
 
-1. [Installation](Installation)
-2. [Model Overview](Model Overview)
-3. [Examples](Examples)
+1. [Installation](#installation)
+2. [Model Overview](#model-overview)
+3. [Examples](#examples)
 
 # Installation
 
