@@ -100,6 +100,9 @@ class FieldSchema(models.Model):
     # the format for a field
     field_format = models.CharField(null=True, blank=True, default=None, max_length=64)
 
+    # This field provides a default value to be used for the field in the case that it is None.
+    default_value = models.CharField(null=True, blank=True, default=None, max_length=128)
+
     # Use django manager utils to manage FieldSchema objects
     objects = ManagerUtilsManager()
 
@@ -125,4 +128,4 @@ class FieldSchema(models.Model):
         else:
             value = getattr(obj, self.field_key)
 
-        return convert_value(self.field_type, value, self.field_format)
+        return convert_value(self.field_type, value, self.field_format, self.default_value)

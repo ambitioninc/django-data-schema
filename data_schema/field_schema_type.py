@@ -7,3 +7,4 @@ class FieldSchemaType(object):
     INT = 'INT'
     FLOAT = 'FLOAT'
     STRING = 'STRING'
+    BOOLEAN = 'BOOLEAN'
