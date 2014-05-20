@@ -6,34 +6,76 @@ Django data schema is a lightweight Django app for defining the schema for a mod
 By describing a schema on a piece of data, this allows other applications to easily reference
 fields of models or fields in dictionaries (or their related json fields).
 
-# Basic Usage
+Django data schema also takes care of all conversions under the hood, such as parsing datetime strings, converting strings to numeric values, using default values when values don't exist, and so on.
+
+1. [Installation](#installation)
+2. [Model Overview](#model-overview)
+3. [Examples](#examples)
+
+# Installation
+
+```python
+pip install django-data-schema
+```
+
+# Model Overview
 Django data schema defines three models for building schemas on data. These models are ``DataSchema`` and
 ``FieldSchema``.
 
 The ``DataSchema`` model provides a ``model_content_type`` field that points to a Django ``ContentType`` model.
-This field represents which object this schema is modeling. If the field is left Null, it is assumed that
-this schema models a dictionary.
+This field represents which object this schema is modeling. If the field is None, it is assumed that
+this schema models an object such as a dictionary or list.
 
 After the enclosing ``DataSchema`` has been defined, various ``FieldSchema`` models can reference the main
-data schema. ``FieldSchema`` models provide the ability to define the name of the field (the ``field_key`` attribute)
-and if the field is part of the uniqueness constraint of the data schema. If the field is part of the
-uniqueness constraint of the data, the user must provide an integrer in the ``uniqueness_order`` field that indicates
-what order this field is in the uniqueness constraint. If the user wishes to parse fields of a python ``list``, a
-``field_position`` attribute must also be provided in the ``FieldSchema`` model.
+data schema. ``FieldSchema`` models provide the following attributes:
 
-Along with these options, a ``FieldSchema`` object must specify its data type, which can be any of the types in the
+- field_key: The name of the field. Used to identify a field in a dictionary or model.
+- field_position: The position of the field. Used to identify a field in a list.
+- uniqueness_order: The order of this field in the uniqueness constraint of the schema. Defaults to None.
+- field_type: The type of field. More on the field types below.
+- field_format: An optional formatting string for the field. Used differently depending on the field type and documented more below.
+- default_value: If the field returns None, this default value will be returned instead.
+
+A ``FieldSchema`` object must specify its data type, which can be any of the types in the
 ``FieldSchemaType`` class. These types are as follows:
 
-- FieldSchemaType.DATE: A python ``date`` object from the ``datetime`` module.
+- FieldSchemaType.DATE: A python ``date`` object from the ``datetime`` module. Currently returned as a ``datetime`` object.
 - FieldSchemaType.DATETIME: A python ``datetime`` object from the ``datetime`` module.
 - FieldSchemaType.INT: A python ``int``.
 - FieldSchemaType.FLOAT: A python ``float``.
 - FieldSchemaType.STRING: A python ``str``.
+- FieldSchemaType.BOOLEAN: A python ``bool``.
 
-Note that these fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``.
-Along with providing the type of field being accessed, a ``field_format`` parameter can be specified as a format
-string for parsing string values into their associated types. Datetime objects, for example, will pass this
-format string to the ``strptime`` function automatically.
+Note that these fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the ``get_value`` function operates are detailed below.
+
+## Using get_value on DATE or DATETIME fields
+The ``get_value`` function has the following behavior on DATE and DATETIME fields:
+
+- If called on a Python ``int`` or ``float`` value, the numeric value will be passed to the ``datetime.utcfromtimestamp`` function.
+- If called on a ``string`` or ``unicode`` value, the string will be stripped of all trailing and leading whitespace. If the string is empty, the default value (or None) will be used. If the string is not empty, it will be passed to dateutil's ``parse`` function. If the ``field_format`` field is specified on the ``FieldSchema`` object, it will be passed to the ``strptime`` function instead. 
+- If called on an aware datetime object (or a string with a timezone), it will be converted to naive UTC time.
+- If called on None, the default value (or None) is returned.
+
+## Using get_value on INT or FLOAT fields
+The ``get_value`` function has the following behavior on INT and FLOAT fields:
+
+- If called on a ``string`` or ``unicode`` value, the string will be stripped of all non-numeric numbers except for periods. If the string is blank, the default value (or None) will be returned. If not, the string will then be passed to ``int()`` or ``float()``.
+- If called on an ``int`` or ``float``, the value will be passed to the ``int()`` or ``float()`` function.
+- No other values can be converted. The ``field_format`` parameter is ignored.
+- If called on None, the default value (or None) is returned.
+
+## Using get_value on a STRING field
+The ``get_value`` function has the following behavior on a STRING field:
+
+- If called on a ``string`` or ``unicode`` value, the string will be stripped of all trailing and leading whitespace. If a ``field_format`` is specified, the string is then be matched to the regex. If it passes, the string is returned. If not, None is returned and the default value is used (or None).
+- All other types are passed to the ``str()`` function.
+- If called on None, the default value (or None) is returned.
+
+## Using get_value on a BOOLEAN field
+The ``get_value`` function has the following behavior on a BOOLEAN field:
+
+- All non-null values are passed to the ``bool()`` function.
+- If called on None, the default value (or None) is returned.
 
 # Examples
 
