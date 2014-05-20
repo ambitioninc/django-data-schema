@@ -186,7 +186,7 @@ class DataSchemaTest(TestCase):
             'field_key': 'value',
         }
         data_schema.get_value(obj, 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', None, None)
 
     def test_get_value_dict_cached(self):
         """
@@ -215,7 +215,7 @@ class DataSchemaTest(TestCase):
             FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format',
             data_schema=data_schema)
         data_schema.get_value(Input(), 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format')
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list(self, convert_value_mock):
@@ -227,7 +227,7 @@ class DataSchemaTest(TestCase):
             FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING,
             data_schema=data_schema)
         data_schema.get_value(['hello', 'world'], 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None)
 
 
 class FieldSchemaTest(TestCase):
@@ -285,7 +285,7 @@ class FieldSchemaTest(TestCase):
 
         field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format')
         field_schema.get_value(Input())
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format')
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list(self, convert_value_mock):
@@ -294,7 +294,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None)
 
 
 class DateFieldSchemaTest(TestCase):
@@ -370,6 +370,24 @@ class DatetimeFieldSchemaTest(TestCase):
     """
     Tests the DATETIME type for field schemas.
     """
+    def test_default_value_blank(self):
+        """
+        Tests when a default value is used and there is a blank string.
+        """
+        field_schema = G(
+            FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, default_value='2013/04/02 9:25 PM')
+        val = field_schema.get_value({'time': ' '})
+        self.assertEquals(val, datetime(2013, 4, 2, 21, 25))
+
+    def test_default_value_null(self):
+        """
+        Tests when a default value is used and there is a null object.
+        """
+        field_schema = G(
+            FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, default_value='2013/04/02 9:25 PM')
+        val = field_schema.get_value({'time': None})
+        self.assertEquals(val, datetime(2013, 4, 2, 21, 25))
+
     def test_no_format_string(self):
         """
         Tests when there is a string input with no format string.
