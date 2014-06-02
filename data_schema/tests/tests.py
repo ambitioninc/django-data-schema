@@ -323,7 +323,7 @@ class FieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='field_key', field_position=-1, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
-    
+
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list_non_extant_out_of_range(self, convert_value_mock):
         """
