@@ -266,14 +266,11 @@ class FieldSchemaTest(TestCase):
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_dict(self, convert_value_mock):
         """
-        Tests setting the value of a field when the object is a dictionary.
+        Tests getting the value of a field when the object is a dictionary.
         """
-        field_schema = G(FieldSchema, field_key='field_key')
-        obj = {
-            'field_key': 'none',
-        }
-        field_schema.set_value(obj, 'value')
-        self.assertEquals(obj, {'field_key': 'value'})
+        field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING)
+        field_schema.get_value({'field_key': 'hello'})
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'hello', None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_obj(self, convert_value_mock):
@@ -295,6 +292,47 @@ class FieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None)
+
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_dict_non_extant(self, convert_value_mock):
+        """
+        Tests getting the value of a field when the object is a dictionary and it doesn't exist in the dict.
+        """
+        field_schema = G(FieldSchema, field_key='field_key_bad', field_type=FieldSchemaType.STRING)
+        field_schema.get_value({'field_key': 'hello'})
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
+
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_obj_non_extant(self, convert_value_mock):
+        """
+        Tests the get_value function with an object as input and the field key is not in the object.
+        """
+        class Input:
+            field_key = 'value'
+
+        field_schema = G(
+            FieldSchema, field_key='field_key_bad', field_type=FieldSchemaType.STRING, field_format='format')
+        field_schema.get_value(Input())
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, 'format', None)
+
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_list_non_extant_negative(self, convert_value_mock):
+        """
+        Tests the get_value function with a list as input and the input position is negative.
+        """
+        field_schema = G(FieldSchema, field_key='field_key', field_position=-1, field_type=FieldSchemaType.STRING)
+        field_schema.get_value(['hello', 'world'])
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
+
+    @patch('data_schema.models.convert_value', set_spec=True)
+    def test_get_value_list_non_extant_out_of_range(self, convert_value_mock):
+        """
+        Tests the get_value function with a list as input and the input position is greater than the
+        length of the list.
+        """
+        field_schema = G(FieldSchema, field_key='field_key', field_position=2, field_type=FieldSchemaType.STRING)
+        field_schema.get_value(['hello', 'world'])
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
 
 
 class DateFieldSchemaTest(TestCase):

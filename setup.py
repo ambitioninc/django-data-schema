@@ -40,7 +40,6 @@ setup(
         'django-manager-utils>=0.3.9',
         'fleming>=0.4',
         'python-dateutil>=2.2',
-        'pytz>=2014.3',
     ],
     tests_require=[
         'django-dynamic-fixture',
