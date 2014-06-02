@@ -122,10 +122,10 @@ class FieldSchema(models.Model):
         Given an object, return the value of the field in that object.
         """
         if isinstance(obj, list):
-            value = obj[self.field_position]
+            value = obj[self.field_position] if 0 <= self.field_position < len(obj) else None
         elif isinstance(obj, dict):
-            value = obj[self.field_key]
+            value = obj[self.field_key] if self.field_key in obj else None
         else:
-            value = getattr(obj, self.field_key)
+            value = getattr(obj, self.field_key) if hasattr(obj, self.field_key) else None
 
         return convert_value(self.field_type, value, self.field_format, self.default_value)
