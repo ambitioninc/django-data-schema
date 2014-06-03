@@ -513,6 +513,14 @@ class IntFieldSchemaTest(TestCase):
     """
     Tests the INT type for field schemas.
     """
+    def test_negative_string(self):
+        """
+        Tests parsing a negative string number.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
+        val = field_schema.get_value({'val': '-1'})
+        self.assertEquals(val, -1)
+
     def test_none(self):
         """
         Tests getting a value of None.
@@ -663,6 +671,14 @@ class FloatFieldSchemaTest(TestCase):
     """
     Tests the FLOAT type for field schemas.
     """
+    def test_negative_string(self):
+        """
+        Tests parsing a negative string number.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': '-1.1'})
+        self.assertEquals(val, -1.1)
+
     def test_none(self):
         """
         Tests getting a value of None.

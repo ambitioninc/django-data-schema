@@ -72,7 +72,7 @@ class NumericConverter(ValueConverter):
     Converts numeric values (floats and ints).
     """
     # A compiled regex for extracting non-numeric characters
-    NON_NUMERIC_REGEX = re.compile(r'[^\d\.]+')
+    NON_NUMERIC_REGEX = re.compile(r'[^\d\.\-]+')
 
     def _preprocess_value(self, value, format_str):
         """
