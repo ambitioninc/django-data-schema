@@ -671,6 +671,30 @@ class FloatFieldSchemaTest(TestCase):
     """
     Tests the FLOAT type for field schemas.
     """
+    def test_positive_scientific_notation(self):
+        """
+        Tests that positive scientific notation strings are parsed.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': '1.1E2'})
+        self.assertEquals(val, 110)
+
+    def test_positive_scientific_notation_small_e(self):
+        """
+        Tests that positive scientific notation strings are parsed with a lowercase e.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': '1.1e2'})
+        self.assertEquals(val, 110)
+
+    def test_negative_scientific_notation(self):
+        """
+        Tests that negative scientific notation strings are parsed.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        val = field_schema.get_value({'val': '-1.1E-2'})
+        self.assertEquals(val, -0.011)
+
     def test_negative_string(self):
         """
         Tests parsing a negative string number.
