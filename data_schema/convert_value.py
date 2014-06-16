@@ -127,7 +127,7 @@ FIELD_SCHEMA_CONVERTERS = {
     FieldSchemaType.DATETIME: DatetimeConverter(FieldSchemaType.DATETIME, datetime),
     FieldSchemaType.INT: NumericConverter(FieldSchemaType.INT, int),
     FieldSchemaType.FLOAT: NumericConverter(FieldSchemaType.FLOAT, float),
-    FieldSchemaType.STRING: StringConverter(FieldSchemaType.STRING, str),
+    FieldSchemaType.STRING: StringConverter(FieldSchemaType.STRING, unicode),
     FieldSchemaType.BOOLEAN: ValueConverter(FieldSchemaType.BOOLEAN, bool),
 }
 
