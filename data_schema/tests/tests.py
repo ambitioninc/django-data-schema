@@ -574,6 +574,14 @@ class StringFieldSchemaTest(TestCase):
     """
     Tests the STRING type for field schemas.
     """
+    def test_bad_unicode_input(self):
+        """
+        Unicode special chars should be handled properly.
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
+        val = field_schema.get_value({'val': u'\u2019'})
+        self.assertEquals(val, u'\u2019')
+
     def test_unicode_input(self):
         """
         Unicode should be handled properly.
