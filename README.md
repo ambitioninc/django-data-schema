@@ -75,8 +75,8 @@ The ``get_value`` function has the following behavior on a STRING field:
 The ``get_value`` function has the following behavior on a BOOLEAN field:
 
 - Bool data types will return True or False
-- All true string values return True ('t', 'T', 'true', 'True', 'TRUE')
-- All false string values return False ('f', 'F', 'false', 'False', 'FALSE')
+- All true string values return True ('t', 'T', 'true', 'True', 'TRUE', 1, '1')
+- All false string values return False ('f', 'F', 'false', 'False', 'FALSE', 0, '0')
 - If called on None, the default value (or None) is returned.
 
 # Examples

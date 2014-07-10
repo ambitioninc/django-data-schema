@@ -71,8 +71,8 @@ class BooleanConverter(ValueConverter):
     """
     Converts strings to a boolean value or None
     """
-    TRUE_VALUES = ('t', 'T', 'true', 'True', 'TRUE', True,)
-    FALSE_VALUES = ('f', 'F', 'false', 'False', 'FALSE', False,)
+    TRUE_VALUES = frozenset(('t', 'T', 'true', 'True', 'TRUE', True, 1, '1',))
+    FALSE_VALUES = frozenset(('f', 'F', 'false', 'False', 'FALSE', False, 0, '0',))
 
     def _convert_value(self, value, format_str):
         if value in self.TRUE_VALUES:

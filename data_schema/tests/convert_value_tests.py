@@ -16,6 +16,8 @@ class BooleanConverterTest(SimpleTestCase):
         self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, 'True'))
         self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, 'TRUE'))
         self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, True))
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, 1))
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, '1'))
 
     def test_convert_value_false(self):
         """
@@ -27,6 +29,8 @@ class BooleanConverterTest(SimpleTestCase):
         self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, 'False'))
         self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, 'FALSE'))
         self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, False))
+        self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, 0))
+        self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, '0'))
 
     def test_convert_value_empty(self):
         """
