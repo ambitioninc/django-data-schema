@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 
 from data_schema import FieldSchemaType
-from data_schema.convert_value import BooleanConverter
+from data_schema.convert_value import convert_value
 
 
 class BooleanConverterTest(SimpleTestCase):
@@ -10,32 +10,36 @@ class BooleanConverterTest(SimpleTestCase):
         """
         Verifies true string values are True
         """
-        converter = BooleanConverter(FieldSchemaType.BOOLEAN, bool)
-        self.assertTrue(converter._convert_value('t', None))
-        self.assertTrue(converter._convert_value('T', None))
-        self.assertTrue(converter._convert_value('true', None))
-        self.assertTrue(converter._convert_value('True', None))
-        self.assertTrue(converter._convert_value('TRUE', None))
-        self.assertTrue(converter._convert_value(True, None))
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, 't'))
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, 'T'))
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, 'true'))
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, 'True'))
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, 'TRUE'))
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, True))
 
     def test_convert_value_false(self):
         """
         Verifies false string values are False
         """
-        converter = BooleanConverter(FieldSchemaType.BOOLEAN, bool)
-        self.assertFalse(converter._convert_value('f', None))
-        self.assertFalse(converter._convert_value('F', None))
-        self.assertFalse(converter._convert_value('false', None))
-        self.assertFalse(converter._convert_value('False', None))
-        self.assertFalse(converter._convert_value('FALSE', None))
-        self.assertFalse(converter._convert_value(False, None))
+        self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, 'f'))
+        self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, 'F'))
+        self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, 'false'))
+        self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, 'False'))
+        self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, 'FALSE'))
+        self.assertFalse(convert_value(FieldSchemaType.BOOLEAN, False))
 
     def test_convert_value_empty(self):
         """
         Verifies that any other value returns None
         """
-        converter = BooleanConverter(FieldSchemaType.BOOLEAN, bool)
-        self.assertIsNone(converter._convert_value(None, None))
-        self.assertIsNone(converter._convert_value('', None))
-        self.assertIsNone(converter._convert_value('string', None))
-        self.assertIsNone(converter._convert_value(5, None))
+        self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, None))
+        self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, ''))
+        self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, 'string'))
+        self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, 5))
+
+    def test_convert_value_default(self):
+        """
+        Verifies that the default value will be used if the passed value is null
+        """
+        self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, None, default_value=True))
+        self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, 'invalid', default_value=True))
