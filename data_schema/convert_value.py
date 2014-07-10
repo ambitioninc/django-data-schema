@@ -67,6 +67,21 @@ class ValueConverter(object):
         return self._convert_value(value, format_str) if value is not None else None
 
 
+class BooleanConverter(ValueConverter):
+    """
+    Converts strings to a boolean value or None
+    """
+    TRUE_VALUES = frozenset(('t', 'T', 'true', 'True', 'TRUE', True, 1, '1',))
+    FALSE_VALUES = frozenset(('f', 'F', 'false', 'False', 'FALSE', False, 0, '0',))
+
+    def _convert_value(self, value, format_str):
+        if value in self.TRUE_VALUES:
+            return True
+        elif value in self.FALSE_VALUES:
+            return False
+        return None
+
+
 class NumericConverter(ValueConverter):
     """
     Converts numeric values (floats and ints).
@@ -128,7 +143,7 @@ FIELD_SCHEMA_CONVERTERS = {
     FieldSchemaType.INT: NumericConverter(FieldSchemaType.INT, int),
     FieldSchemaType.FLOAT: NumericConverter(FieldSchemaType.FLOAT, float),
     FieldSchemaType.STRING: StringConverter(FieldSchemaType.STRING, unicode),
-    FieldSchemaType.BOOLEAN: ValueConverter(FieldSchemaType.BOOLEAN, bool),
+    FieldSchemaType.BOOLEAN: BooleanConverter(FieldSchemaType.BOOLEAN, bool),
 }
 
 

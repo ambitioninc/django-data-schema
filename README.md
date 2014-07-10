@@ -74,7 +74,9 @@ The ``get_value`` function has the following behavior on a STRING field:
 ## Using get_value on a BOOLEAN field
 The ``get_value`` function has the following behavior on a BOOLEAN field:
 
-- All non-null values are passed to the ``bool()`` function.
+- Bool data types will return True or False
+- All true string values return True ('t', 'T', 'true', 'True', 'TRUE', 1, '1')
+- All false string values return False ('f', 'F', 'false', 'False', 'FALSE', 0, '0')
 - If called on None, the default value (or None) is returned.
 
 # Examples
@@ -92,7 +94,7 @@ login_time_field = FieldSchema.objects.create(
 ```
 
 The above example represents the schema of a user login. In this schema, the user id field provides the uniqueness
-constraint of the data. The uniquess constraint can then easily be accessed by simply doing the following.
+constraint of the data. The uniqueness constraint can then easily be accessed by simply doing the following.
 
 ```python
 unique_fields = user_login_schema.get_unique_fields()
