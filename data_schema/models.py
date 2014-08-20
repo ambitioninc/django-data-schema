@@ -106,6 +106,9 @@ class FieldSchema(models.Model):
     # This field provides a default value to be used for the field in the case that it is None.
     default_value = models.CharField(null=True, blank=True, default=None, max_length=128)
 
+    # Flag to indicate if setting values should be validated against an option list
+    has_options = models.BooleanField(default=False)
+
     # Use django manager utils to manage FieldSchema objects
     objects = ManagerUtilsManager()
 
@@ -113,6 +116,18 @@ class FieldSchema(models.Model):
         """
         Given an object, set the value of the field in that object.
         """
+        if self.has_options:
+            # Build a set of possible values by calling self.get_value on the stored value options. This will
+            # make sure they are the right data type because they are stored as strings
+            values = set(
+                self.get_value({
+                    self.field_key: option_value
+                })
+                for option_value in self.fieldoption_set.all().values_list('value', flat=True)
+            )
+            if value not in values:
+                raise Exception('Invalid option for {0}'.format(self.field_key))
+
         if isinstance(obj, list):
             obj[self.field_position] = value
         elif isinstance(obj, dict):
@@ -137,3 +152,11 @@ class FieldSchema(models.Model):
         if not self.display_name:
             self.display_name = self.field_key
         super(FieldSchema, self).save(*args, **kwargs)
+
+
+class FieldOption(models.Model):
+    """
+    Specifies a set of possible values that a field schema can have
+    """
+    field_schema = models.ForeignKey(FieldSchema)
+    value = models.CharField(max_length=128)
