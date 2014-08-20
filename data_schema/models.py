@@ -84,6 +84,9 @@ class FieldSchema(models.Model):
     # The key for the field in the data
     field_key = models.CharField(max_length=64)
 
+    # Optional way to display the field. defaults to the field_key
+    display_name = models.CharField(max_length=64, null=True, default=None)
+
     # The order in which this field appears in the UID for the record. It is null if it does
     # not appear in the uniqueness constraint
     uniqueness_order = models.IntegerField(null=True)
@@ -129,3 +132,8 @@ class FieldSchema(models.Model):
             value = getattr(obj, self.field_key) if hasattr(obj, self.field_key) else None
 
         return convert_value(self.field_type, value, self.field_format, self.default_value)
+
+    def save(self, *args, **kwargs):
+        if not self.display_name:
+            self.display_name = self.field_key
+        super(FieldSchema, self).save(*args, **kwargs)
