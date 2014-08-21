@@ -84,6 +84,9 @@ class FieldSchema(models.Model):
     # The key for the field in the data
     field_key = models.CharField(max_length=64)
 
+    # Optional way to display the field. defaults to the field_key
+    display_name = models.CharField(max_length=64, null=True, default=None)
+
     # The order in which this field appears in the UID for the record. It is null if it does
     # not appear in the uniqueness constraint
     uniqueness_order = models.IntegerField(null=True)
@@ -103,6 +106,9 @@ class FieldSchema(models.Model):
     # This field provides a default value to be used for the field in the case that it is None.
     default_value = models.CharField(null=True, blank=True, default=None, max_length=128)
 
+    # Flag to indicate if setting values should be validated against an option list
+    has_options = models.BooleanField(default=False)
+
     # Use django manager utils to manage FieldSchema objects
     objects = ManagerUtilsManager()
 
@@ -110,6 +116,18 @@ class FieldSchema(models.Model):
         """
         Given an object, set the value of the field in that object.
         """
+        if self.has_options:
+            # Build a set of possible values by calling self.get_value on the stored value options. This will
+            # make sure they are the right data type because they are stored as strings
+            values = set(
+                self.get_value({
+                    self.field_key: field_option.value
+                })
+                for field_option in self.fieldoption_set.all()
+            )
+            if value not in values:
+                raise Exception('Invalid option for {0}'.format(self.field_key))
+
         if isinstance(obj, list):
             obj[self.field_position] = value
         elif isinstance(obj, dict):
@@ -129,3 +147,16 @@ class FieldSchema(models.Model):
             value = getattr(obj, self.field_key) if hasattr(obj, self.field_key) else None
 
         return convert_value(self.field_type, value, self.field_format, self.default_value)
+
+    def save(self, *args, **kwargs):
+        if not self.display_name:
+            self.display_name = self.field_key
+        super(FieldSchema, self).save(*args, **kwargs)
+
+
+class FieldOption(models.Model):
+    """
+    Specifies a set of possible values that a field schema can have
+    """
+    field_schema = models.ForeignKey(FieldSchema)
+    value = models.CharField(max_length=128)
