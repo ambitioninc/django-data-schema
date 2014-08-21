@@ -121,9 +121,9 @@ class FieldSchema(models.Model):
             # make sure they are the right data type because they are stored as strings
             values = set(
                 self.get_value({
-                    self.field_key: option_value
+                    self.field_key: field_option.value
                 })
-                for option_value in self.fieldoption_set.all().values_list('value', flat=True)
+                for field_option in self.fieldoption_set.all()
             )
             if value not in values:
                 raise Exception('Invalid option for {0}'.format(self.field_key))
