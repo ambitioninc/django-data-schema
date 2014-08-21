@@ -5,7 +5,7 @@ from django_dynamic_fixture import G
 from mock import patch
 import pytz
 
-from data_schema.models import DataSchema, FieldSchema, FieldSchemaType
+from data_schema.models import DataSchema, FieldSchema, FieldSchemaType, FieldOption
 
 
 class DataSchemaTest(TestCase):
@@ -782,3 +782,46 @@ class FloatFieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': 5.2})
         self.assertAlmostEquals(val, 5.2)
+
+
+class FieldOptionTest(TestCase):
+
+    def test_set_valid_value(self):
+        """
+        The field schema should have defined options and a valid option should be set
+        """
+        field_schema = G(FieldSchema, field_type=FieldSchemaType.STRING, field_key='my_key', has_options=True)
+        G(FieldOption, field_schema=field_schema, value='one')
+        G(FieldOption, field_schema=field_schema, value='two')
+        item = {
+            'my_key': None,
+        }
+        field_schema.set_value(item, 'one')
+        self.assertEqual('one', item['my_key'])
+
+    def test_set_invalid_value(self):
+        """
+        The field schema should have defined options and an invalid option should be set
+        """
+        field_schema = G(FieldSchema, field_type=FieldSchemaType.STRING, field_key='my_key', has_options=True)
+        G(FieldOption, field_schema=field_schema, value='one')
+        G(FieldOption, field_schema=field_schema, value='two')
+        item = {
+            'my_key': None,
+        }
+        with self.assertRaises(Exception):
+            field_schema.set_value(item, 'three')
+        self.assertIsNone(item['my_key'])
+
+    def test_set_value_different_type(self):
+        """
+        The field schema should be a different type and it should validate correctly
+        """
+        field_schema = G(FieldSchema, field_type=FieldSchemaType.INT, field_key='my_key', has_options=True)
+        G(FieldOption, field_schema=field_schema, value='1')
+        G(FieldOption, field_schema=field_schema, value='2')
+        item = {
+            'my_key': None,
+        }
+        field_schema.set_value(item, 1)
+        self.assertEqual(1, item['my_key'])
