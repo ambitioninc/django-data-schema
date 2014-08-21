@@ -334,6 +334,22 @@ class FieldSchemaTest(TestCase):
         field_schema.get_value(['hello', 'world'])
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
 
+    def test_set_display_name(self):
+        """
+        Tests that a display name is left alone if different than the field_key
+        """
+        field_schema = G(FieldSchema, field_key='test', display_name='display')
+        self.assertEqual('test', field_schema.field_key)
+        self.assertEqual('display', field_schema.display_name)
+
+    def test_set_display_name_empty(self):
+        """
+        Tests that the field_key is copied to the display name if there is no display name set when saving
+        """
+        field_schema = G(FieldSchema, field_key='test')
+        self.assertEqual('test', field_schema.field_key)
+        self.assertEqual('test', field_schema.display_name)
+
 
 class DateFieldSchemaTest(TestCase):
     """
