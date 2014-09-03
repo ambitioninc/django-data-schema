@@ -96,8 +96,7 @@ class FieldSchema(models.Model):
     field_position = models.IntegerField(null=True)
 
     # The type of field. The available choices are present in the FieldSchemaType class
-    field_type = models.CharField(
-        max_length=32, choices=((field_type, field_type) for field_type in FieldSchemaType.__dict__))
+    field_type = models.CharField(max_length=32, choices=FieldSchemaType.choices())
 
     # If the field is a string and needs to be converted to another type, this string specifies
     # the format for a field
