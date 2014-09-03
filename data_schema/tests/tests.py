@@ -8,6 +8,19 @@ import pytz
 from data_schema.models import DataSchema, FieldSchema, FieldSchemaType, FieldOption
 
 
+class FieldSchemaTypeTest(TestCase):
+    def test_choices(self):
+        expected_choices = set([
+            ('DATE', 'DATE'),
+            ('DATETIME', 'DATETIME'),
+            ('INT', 'INT'),
+            ('FLOAT', 'FLOAT'),
+            ('STRING', 'STRING'),
+            ('BOOLEAN', 'BOOLEAN'),
+        ])
+        self.assertEquals(expected_choices, set(FieldSchemaType.choices()))
+
+
 class DataSchemaTest(TestCase):
     """
     Tests the DataSchema model.
