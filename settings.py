@@ -1,5 +1,6 @@
 import os
 
+import django
 from django.conf import settings
 
 
@@ -36,6 +37,7 @@ def configure_settings():
             DATABASES={
                 'default': db_config,
             },
+            MIDDLEWARE_CLASSES={},
             INSTALLED_APPS=(
                 'django.contrib.auth',
                 'django.contrib.contenttypes',
@@ -44,7 +46,7 @@ def configure_settings():
                 'south',
                 'data_schema',
                 'data_schema.tests',
-            ),
+            ) + (('south',) if django.VERSION[1] <= 6 else ()),
             ROOT_URLCONF='data_schema.urls',
             DEBUG=False,
             DDF_FILL_NULLABLE_FIELDS=False,
