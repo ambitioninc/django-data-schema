@@ -3,6 +3,7 @@ Functions for handling conversions of values from one type to another.
 """
 from datetime import datetime
 import re
+import six
 
 from dateutil.parser import parse
 import fleming
@@ -15,6 +16,8 @@ class ValueConverter(object):
     """
     A generic value converter.
     """
+    NUMBER_TYPES = (float, complex) + six.integer_types
+
     def __init__(self, field_schema_type, python_type):
         # Set the FieldSchemaType value
         self._field_schema_type = field_schema_type
@@ -26,13 +29,13 @@ class ValueConverter(object):
         """
         Returns True if the value is a string.
         """
-        return isinstance(value, (str, unicode))
+        return isinstance(value, six.string_types)
 
     def is_numeric(self, value):
         """
         Returns True if the value is numeric.
         """
-        return isinstance(value, (int, float, long, complex))
+        return isinstance(value, self.NUMBER_TYPES)
 
     def _preprocess_value(self, value, format_str):
         """
@@ -142,7 +145,7 @@ FIELD_SCHEMA_CONVERTERS = {
     FieldSchemaType.DATETIME: DatetimeConverter(FieldSchemaType.DATETIME, datetime),
     FieldSchemaType.INT: NumericConverter(FieldSchemaType.INT, int),
     FieldSchemaType.FLOAT: NumericConverter(FieldSchemaType.FLOAT, float),
-    FieldSchemaType.STRING: StringConverter(FieldSchemaType.STRING, unicode),
+    FieldSchemaType.STRING: StringConverter(FieldSchemaType.STRING, six.text_type),
     FieldSchemaType.BOOLEAN: BooleanConverter(FieldSchemaType.BOOLEAN, bool),
 }
 

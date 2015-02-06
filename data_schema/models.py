@@ -38,7 +38,7 @@ class DataSchema(models.Model):
             setattr(self, '_unique_fields', [
                 field for field in self.fieldschema_set.all() if field.uniqueness_order is not None
             ])
-            self._unique_fields.sort(key=lambda k: k.uniqueness_order)
+            self._unique_fields.sort(key=lambda k: k.uniqueness_order or 0)
         return self._unique_fields
 
     def get_fields(self):
@@ -46,7 +46,7 @@ class DataSchema(models.Model):
         Gets all fields in the schema. Note - dont use django's order_by since we are caching the fieldschema_set
         beforehand.
         """
-        return sorted(self.fieldschema_set.all(), key=lambda k: k.field_position)
+        return sorted(self.fieldschema_set.all(), key=lambda k: k.field_position or 0)
 
     def _get_field_map(self):
         """
@@ -96,8 +96,7 @@ class FieldSchema(models.Model):
     field_position = models.IntegerField(null=True)
 
     # The type of field. The available choices are present in the FieldSchemaType class
-    field_type = models.CharField(
-        max_length=32, choices=((field_type, field_type) for field_type in FieldSchemaType.__dict__))
+    field_type = models.CharField(max_length=32, choices=FieldSchemaType.choices())
 
     # If the field is a string and needs to be converted to another type, this string specifies
     # the format for a field
