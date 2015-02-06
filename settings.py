@@ -43,7 +43,6 @@ def configure_settings():
                 'django.contrib.contenttypes',
                 'django.contrib.sessions',
                 'django.contrib.admin',
-                'south',
                 'data_schema',
                 'data_schema.tests',
             ) + (('south',) if django.VERSION[1] <= 6 else ()),
