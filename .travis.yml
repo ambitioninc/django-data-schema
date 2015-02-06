@@ -12,8 +12,8 @@ env:
 install:
   - pip install -q coverage flake8 Django==$DJANGO
 before_script:
-  - flake8 . --max-line-length=120 --max-complexity=10 --exclude='env,migrations,*.egg'
+  - flake8 . --max-line-length=120 --max-complexity=10 --exclude='env,migrations,south_migrations,*.egg'
   - psql -c 'CREATE DATABASE data_schema;' -U postgres
 script:
-  - coverage run --source='data_schema' --branch --omit='data_schema/migrations/*' setup.py test
+  - coverage run --source='data_schema' --branch --omit='data_schema/south_migrations/*,data_schema/migrations/*' setup.py test
   - coverage report --fail-under=100 --show-missing
