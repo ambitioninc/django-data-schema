@@ -55,7 +55,13 @@ class ValueConverter(object):
         """
         Converts the value into the format of the field schema type.
         """
-        return self._python_type(value)
+        try:
+            return self._python_type(value)
+        except Exception as e:
+            # Attach additional information to the exception to make higher level error handling easier
+            e.bad_value = value
+            e.expected_type = self._field_schema_type
+            raise e
 
     def __call__(self, value, format_str, default_value):
         """

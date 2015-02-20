@@ -4,6 +4,20 @@ from data_schema import FieldSchemaType
 from data_schema.convert_value import convert_value
 
 
+class ConvertValueExceptionTest(SimpleTestCase):
+    def test_get_value_exception(self):
+        """
+        Tests that when we fail to parse a value, we get a ValueError with additional information attached.
+        """
+        bad_value = '-'
+
+        with self.assertRaises(ValueError) as ctx:
+            convert_value(FieldSchemaType.INT, bad_value)
+
+        self.assertEquals(bad_value, ctx.exception.bad_value)
+        self.assertEquals(FieldSchemaType.INT, ctx.exception.expected_type)
+
+
 class BooleanConverterTest(SimpleTestCase):
 
     def test_convert_value_true(self):
