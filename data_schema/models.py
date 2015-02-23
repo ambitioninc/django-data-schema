@@ -62,7 +62,12 @@ class DataSchema(models.Model):
         """
         Given an object and a field key, return the value of the field in the object.
         """
-        return self._get_field_map()[field_key].get_value(obj)
+        try:
+            return self._get_field_map()[field_key].get_value(obj)
+        except Exception as e:
+            # Attach additional information to the exception to make higher level error handling easier
+            e.field_key = field_key
+            raise e
 
     def set_value(self, obj, field_key, value):
         """
