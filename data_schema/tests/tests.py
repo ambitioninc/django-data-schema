@@ -25,6 +25,24 @@ class DataSchemaTest(TestCase):
     """
     Tests the DataSchema model.
     """
+    def test_get_value_exception(self):
+        """
+        Tests that when we fail to parse a value, we get a ValueError with additional information attached.
+        """
+        bad_value = '-'
+        field_key = 'number'
+        data_schema = G(DataSchema)
+        G(
+            FieldSchema, field_key='number', field_position=0, field_type=FieldSchemaType.INT,
+            data_schema=data_schema)
+
+        with self.assertRaises(ValueError) as ctx:
+            data_schema.get_value({field_key: bad_value}, field_key)
+
+        self.assertEquals(field_key, ctx.exception.field_key)
+        self.assertEquals(bad_value, ctx.exception.bad_value)
+        self.assertEquals(FieldSchemaType.INT, ctx.exception.expected_type)
+
     def test_get_unique_fields_no_fields(self):
         """
         Tests the get_unique_fields function when there are no fields defined.
