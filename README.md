@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/ambitioninc/django-data-schema.png)](https://travis-ci.org/ambitioninc/django-data-schema)
 
-Django Data Schema
-==================
+# Django Data Schema
 Django data schema is a lightweight Django app for defining the schema for a model, dictionary, or list.
 By describing a schema on a piece of data, this allows other applications to easily reference
 fields of models or fields in dictionaries (or their related json fields).
@@ -12,13 +11,13 @@ Django data schema also takes care of all conversions under the hood, such as pa
 2. [Model Overview](#model-overview)
 3. [Examples](#examples)
 
-# Installation
+## Installation
 
 ```python
 pip install django-data-schema
 ```
 
-# Model Overview
+## Model Overview
 Django data schema defines three models for building schemas on data. These models are ``DataSchema`` and
 ``FieldSchema``.
 
@@ -48,7 +47,7 @@ A ``FieldSchema`` object must specify its data type, which can be any of the typ
 
 Note that these fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the ``get_value`` function operates are detailed below.
 
-## Using get_value on DATE or DATETIME fields
+### Using get_value on DATE or DATETIME fields
 The ``get_value`` function has the following behavior on DATE and DATETIME fields:
 
 - If called on a Python ``int`` or ``float`` value, the numeric value will be passed to the ``datetime.utcfromtimestamp`` function.
@@ -56,7 +55,7 @@ The ``get_value`` function has the following behavior on DATE and DATETIME field
 - If called on an aware datetime object (or a string with a timezone), it will be converted to naive UTC time.
 - If called on None, the default value (or None) is returned.
 
-## Using get_value on INT or FLOAT fields
+### Using get_value on INT or FLOAT fields
 The ``get_value`` function has the following behavior on INT and FLOAT fields:
 
 - If called on a ``string`` or ``unicode`` value, the string will be stripped of all non-numeric numbers except for periods. If the string is blank, the default value (or None) will be returned. If not, the string will then be passed to ``int()`` or ``float()``.
@@ -64,14 +63,14 @@ The ``get_value`` function has the following behavior on INT and FLOAT fields:
 - No other values can be converted. The ``field_format`` parameter is ignored.
 - If called on None, the default value (or None) is returned.
 
-## Using get_value on a STRING field
+### Using get_value on a STRING field
 The ``get_value`` function has the following behavior on a STRING field:
 
 - If called on a ``string`` or ``unicode`` value, the string will be stripped of all trailing and leading whitespace. If a ``field_format`` is specified, the string is then be matched to the regex. If it passes, the string is returned. If not, None is returned and the default value is used (or None).
 - All other types are passed to the ``str()`` function.
 - If called on None, the default value (or None) is returned.
 
-## Using get_value on a BOOLEAN field
+### Using get_value on a BOOLEAN field
 The ``get_value`` function has the following behavior on a BOOLEAN field:
 
 - Bool data types will return True or False
@@ -79,7 +78,7 @@ The ``get_value`` function has the following behavior on a BOOLEAN field:
 - All false string values return False ('f', 'F', 'false', 'False', 'FALSE', 0, '0')
 - If called on None, the default value (or None) is returned.
 
-# Examples
+## Examples
 
 A data schema can be created like the following:
 
