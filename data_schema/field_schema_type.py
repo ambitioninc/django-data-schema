@@ -11,7 +11,14 @@ class FieldSchemaType(object):
 
     @classmethod
     def choices(cls):
+        """
+        An alphabetical list of the types. This must be alphabetical for the
+        database default on the Field Schema model's field_type field
+        """
         def is_internal(x):
             return x.startswith('__') and x.endswith('__')
 
-        return [(val, val) for val in cls.__dict__ if not is_internal(val) and val != 'choices']
+        types = [(val, val) for val in cls.__dict__ if not is_internal(val) and val != 'choices']
+
+        types.sort()
+        return types

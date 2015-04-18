@@ -1,3 +1,4 @@
+from copy import copy
 from datetime import datetime
 
 from django.test import TestCase
@@ -19,6 +20,14 @@ class FieldSchemaTypeTest(TestCase):
             ('BOOLEAN', 'BOOLEAN'),
         ])
         self.assertEquals(expected_choices, set(FieldSchemaType.choices()))
+
+    def test_alphabetical(self):
+        choices = FieldSchemaType.choices()
+
+        sorted_choices = copy(choices)
+        sorted_choices.sort()
+
+        self.assertListEqual(choices, sorted_choices)
 
 
 class DataSchemaTest(TestCase):
