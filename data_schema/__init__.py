@@ -2,4 +2,4 @@
 from .version import __version__
 from .models import DataSchema, FieldSchema, FieldSchemaType
 
-django_app_config = 'data_schema.apps.DataSchemaConfig'
+default_app_config = 'data_schema.apps.DataSchemaConfig'
