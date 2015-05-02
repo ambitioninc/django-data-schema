@@ -2,9 +2,7 @@
 branch = True
 omit =
     */migrations/*
-    */south_migrations/*
     data_schema/version.py
-    data_schema/apps.py
 source = data_schema
 [report]
 exclude_lines =

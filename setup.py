@@ -36,7 +36,7 @@ setup(
     ],
     license='MIT',
     install_requires=[
-        'django>=1.6',
+        'django>=1.7',
         'django-manager-utils>=0.7.0',
         'fleming>=0.4',
         'python-dateutil>=2.2',
@@ -45,7 +45,6 @@ setup(
         'django-dynamic-fixture',
         'psycopg2',
         'django-nose',
-        'south',
         'mock',
     ],
     test_suite='run_tests.run_tests',
