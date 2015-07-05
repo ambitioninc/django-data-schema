@@ -1,6 +1,7 @@
 from copy import copy
 from datetime import datetime
 
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django_dynamic_fixture import G
 from mock import patch
@@ -28,6 +29,37 @@ class FieldSchemaTypeTest(TestCase):
         sorted_choices.sort()
 
         self.assertListEqual(choices, sorted_choices)
+
+
+class DataSchemaUpdateTest(TestCase):
+    """
+    Tests the update method in the DataSchema model.
+    """
+    def test_update_no_values(self):
+        ds = DataSchema()
+        ds.update()
+        self.assertIsNotNone(ds.id)
+
+    def test_update_with_model_ctype_none(self):
+        ds = DataSchema()
+        ds.update(model_content_type=None)
+        self.assertIsNone(ds.model_content_type)
+
+    def test_update_with_model_ctype_not_none(self):
+        ds = DataSchema()
+        ds.update(model_content_type=ContentType.objects.get_for_model(ds))
+        self.assertEquals(ds.model_content_type, ContentType.objects.get_for_model(ds))
+
+    def test_empty_field_schema_set(self):
+        ds = DataSchema()
+        ds.update(fieldschema_set=[])
+        self.assertEquals(FieldSchema.objects.count(), 0)
+
+    def test_empty_field_schema_set_with_preexisting(self):
+        ds = G(DataSchema)
+        G(FieldSchema, data_schema=ds)
+        ds.update(fieldschema_set=[])
+        self.assertEquals(FieldSchema.objects.count(), 0)
 
 
 class DataSchemaTest(TestCase):
