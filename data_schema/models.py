@@ -51,8 +51,10 @@ class DataSchema(models.Model):
         if 'model_content_type' in updates:
             self.model_content_type = updates['model_content_type']
 
+        self.save()
+
         if 'fieldschema_set' in updates:
-            # Create the field schema models
+            # Sync the field schema models
             sync(self.fieldschema_set.all(), [
                 FieldSchema(
                     data_schema=self,
@@ -67,11 +69,21 @@ class DataSchema(models.Model):
                 )
                 for fs_values in updates['fieldschema_set']
             ], ['field_key'], [
-                'data_schema', 'display_name', 'field_key', 'field_type', 'uniqueness_order', 'field_position',
+                'display_name', 'field_key', 'field_type', 'uniqueness_order', 'field_position',
                 'field_format', 'default_value', 'has_options'
             ])
 
-        return self.save()
+            # Sync the options of the field schema models if they are present
+            for fs_values in updates['fieldschema_set']:
+                if 'fieldoption_set' in fs_values:
+                    fs = self.fieldschema_set.get(field_key=fs_values['field_key'])
+                    sync(fs.fieldoption_set.all(), [
+                        FieldOption(
+                            field_schema=fs,
+                            value=f_option,
+                        )
+                        for f_option in fs_values['fieldoption_set']
+                    ], ['value'], ['value'])
 
     def get_unique_fields(self):
         """
@@ -209,3 +221,6 @@ class FieldOption(models.Model):
     """
     field_schema = models.ForeignKey(FieldSchema)
     value = models.CharField(max_length=128)
+
+    class Meta:
+        unique_together = ('field_schema', 'value')
