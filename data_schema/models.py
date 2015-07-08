@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
-from django.db import models
-from manager_utils import ManagerUtilsManager
+from django.db import models, transaction
+from manager_utils import ManagerUtilsManager, sync
 
 from data_schema.convert_value import convert_value
 from data_schema.field_schema_type import FieldSchemaType
@@ -27,6 +27,63 @@ class DataSchema(models.Model):
 
     # A custom model manager that caches objects
     objects = DataSchemaManager()
+
+    @transaction.atomic
+    def update(self, **updates):
+        """
+        Takes a template of updates and updates the data schema. The following are possible keyword
+        arguments.
+
+        'model_content_type': The string path of a model that this schema represents (or None),
+        'fieldschema_set': [{
+            'field_key': The field key of the field,
+            'display_name': The display name for the field (or the 'field_key' by default),
+            'field_type': The FieldSchemaType type of the field,
+            'uniqueness_order': The order this field is in the uniquessness constraint (or None by default),
+            'field_position': The position of this field if it can be parsed by an array (or None by default),
+            'field_format': The format of this field (or None by default),
+            'default_value': The default value of this field (or None by default),
+            'fieldoption_set': The set of options for the field schema (optional),
+        }, {
+            Additional field schemas...
+        }]
+        """
+        if 'model_content_type' in updates:
+            self.model_content_type = updates['model_content_type']
+
+        self.save()
+
+        if 'fieldschema_set' in updates:
+            # Sync the field schema models
+            sync(self.fieldschema_set.all(), [
+                FieldSchema(
+                    data_schema=self,
+                    field_key=fs_values['field_key'],
+                    display_name=fs_values.get('display_name', ''),
+                    field_type=fs_values['field_type'],
+                    uniqueness_order=fs_values.get('uniqueness_order', None),
+                    field_position=fs_values.get('field_position', None),
+                    field_format=fs_values.get('field_format', None),
+                    default_value=fs_values.get('default_value', None),
+                    has_options='fieldoption_set' in fs_values,
+                )
+                for fs_values in updates['fieldschema_set']
+            ], ['field_key'], [
+                'display_name', 'field_key', 'field_type', 'uniqueness_order', 'field_position',
+                'field_format', 'default_value', 'has_options'
+            ])
+
+            # Sync the options of the field schema models if they are present
+            for fs_values in updates['fieldschema_set']:
+                if 'fieldoption_set' in fs_values:
+                    fs = self.fieldschema_set.get(field_key=fs_values['field_key'])
+                    sync(fs.fieldoption_set.all(), [
+                        FieldOption(
+                            field_schema=fs,
+                            value=f_option,
+                        )
+                        for f_option in fs_values['fieldoption_set']
+                    ], ['value'], ['value'])
 
     def get_unique_fields(self):
         """
@@ -90,7 +147,7 @@ class FieldSchema(models.Model):
     field_key = models.CharField(max_length=64)
 
     # Optional way to display the field. defaults to the field_key
-    display_name = models.CharField(max_length=64, null=True, default=None)
+    display_name = models.CharField(max_length=64, blank=True, default='')
 
     # The order in which this field appears in the UID for the record. It is null if it does
     # not appear in the uniqueness constraint
@@ -164,3 +221,6 @@ class FieldOption(models.Model):
     """
     field_schema = models.ForeignKey(FieldSchema)
     value = models.CharField(max_length=128)
+
+    class Meta:
+        unique_together = ('field_schema', 'value')

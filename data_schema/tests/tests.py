@@ -1,6 +1,7 @@
 from copy import copy
 from datetime import datetime
 
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django_dynamic_fixture import G
 from mock import patch
@@ -28,6 +29,139 @@ class FieldSchemaTypeTest(TestCase):
         sorted_choices.sort()
 
         self.assertListEqual(choices, sorted_choices)
+
+
+class DataSchemaUpdateTest(TestCase):
+    """
+    Tests the update method in the DataSchema model.
+    """
+    def test_update_no_values(self):
+        ds = DataSchema()
+        ds.update()
+        self.assertIsNotNone(ds.id)
+
+    def test_update_with_model_ctype_none(self):
+        ds = DataSchema()
+        ds.update(model_content_type=None)
+        self.assertIsNone(ds.model_content_type)
+
+    def test_update_with_model_ctype_not_none(self):
+        ds = DataSchema()
+        ds.update(model_content_type=ContentType.objects.get_for_model(ds))
+        self.assertEquals(ds.model_content_type, ContentType.objects.get_for_model(ds))
+
+    def test_empty_field_schema_set(self):
+        ds = DataSchema()
+        ds.update(fieldschema_set=[])
+        self.assertEquals(FieldSchema.objects.count(), 0)
+
+    def test_empty_field_schema_set_with_preexisting(self):
+        ds = G(DataSchema)
+        G(FieldSchema, data_schema=ds)
+        ds.update(fieldschema_set=[])
+        self.assertEquals(FieldSchema.objects.count(), 0)
+
+    def test_field_schema_set_creation_with_basic_values(self):
+        ds = DataSchema()
+        ds.update(fieldschema_set=[{
+            'field_key': 'email',
+            'field_type': 'STRING'
+        }])
+        fs = ds.fieldschema_set.get()
+        self.assertEquals(fs.field_key, 'email')
+        self.assertEquals(fs.field_type, 'STRING')
+
+    def test_field_schema_set_preexisting_values(self):
+        ds = G(DataSchema)
+        G(FieldSchema, field_key='email', display_name='Email!', data_schema=ds)
+        G(FieldSchema, field_key='hi', data_schema=ds)
+
+        ds.update(fieldschema_set=[{
+            'field_key': 'email',
+            'field_type': 'STRING',
+            'display_name': 'Email',
+            'uniqueness_order': 1,
+            'field_position': 1,
+            'field_format': 'format',
+            'default_value': '',
+        }, {
+            'field_key': 'date',
+            'field_type': 'DATETIME',
+            'display_name': 'Date',
+            'uniqueness_order': 2,
+            'field_position': 2,
+            'field_format': 'format2',
+            'default_value': 'default',
+        }])
+
+        self.assertEquals(FieldSchema.objects.count(), 2)
+        fs = ds.fieldschema_set.all().order_by('field_key')[0]
+        self.assertEquals(fs.field_key, 'date')
+        self.assertEquals(fs.field_type, 'DATETIME')
+        self.assertEquals(fs.display_name, 'Date')
+        self.assertEquals(fs.uniqueness_order, 2)
+        self.assertEquals(fs.field_position, 2)
+        self.assertEquals(fs.field_format, 'format2')
+        self.assertEquals(fs.default_value, 'default')
+        self.assertFalse(fs.has_options)
+
+        fs = ds.fieldschema_set.all().order_by('field_key')[1]
+        self.assertEquals(fs.field_key, 'email')
+        self.assertEquals(fs.field_type, 'STRING')
+        self.assertEquals(fs.display_name, 'Email')
+        self.assertEquals(fs.uniqueness_order, 1)
+        self.assertEquals(fs.field_position, 1)
+        self.assertEquals(fs.field_format, 'format')
+        self.assertEquals(fs.default_value, '')
+        self.assertFalse(fs.has_options)
+
+    def test_field_schema_set_preexisting_values_w_options(self):
+        ds = G(DataSchema)
+        G(FieldSchema, field_key='email', display_name='Email!', data_schema=ds)
+        G(FieldSchema, field_key='hi', data_schema=ds)
+
+        ds.update(fieldschema_set=[{
+            'field_key': 'email',
+            'field_type': 'STRING',
+            'display_name': 'Email',
+            'uniqueness_order': 1,
+            'field_position': 1,
+            'field_format': 'format',
+            'default_value': '',
+            'fieldoption_set': ['option1', 'option2'],
+        }, {
+            'field_key': 'date',
+            'field_type': 'DATETIME',
+            'display_name': 'Date',
+            'uniqueness_order': 2,
+            'field_position': 2,
+            'field_format': 'format2',
+            'default_value': 'default',
+            'fieldoption_set': ['option3', 'option4'],
+        }])
+
+        self.assertEquals(FieldSchema.objects.count(), 2)
+        fs = ds.fieldschema_set.all().order_by('field_key')[0]
+        self.assertEquals(fs.field_key, 'date')
+        self.assertEquals(fs.field_type, 'DATETIME')
+        self.assertEquals(fs.display_name, 'Date')
+        self.assertEquals(fs.uniqueness_order, 2)
+        self.assertEquals(fs.field_position, 2)
+        self.assertEquals(fs.field_format, 'format2')
+        self.assertEquals(fs.default_value, 'default')
+        self.assertTrue(fs.has_options)
+        self.assertEquals(set(['option3', 'option4']), set(fs.fieldoption_set.values_list('value', flat=True)))
+
+        fs = ds.fieldschema_set.all().order_by('field_key')[1]
+        self.assertEquals(fs.field_key, 'email')
+        self.assertEquals(fs.field_type, 'STRING')
+        self.assertEquals(fs.display_name, 'Email')
+        self.assertEquals(fs.uniqueness_order, 1)
+        self.assertEquals(fs.field_position, 1)
+        self.assertEquals(fs.field_format, 'format')
+        self.assertEquals(fs.default_value, '')
+        self.assertTrue(fs.has_options)
+        self.assertEquals(set(['option1', 'option2']), set(fs.fieldoption_set.values_list('value', flat=True)))
 
 
 class DataSchemaTest(TestCase):
