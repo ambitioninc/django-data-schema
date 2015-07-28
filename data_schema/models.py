@@ -65,7 +65,7 @@ class DataSchema(models.Model):
                     field_position=fs_values.get('field_position', None),
                     field_format=fs_values.get('field_format', None),
                     default_value=fs_values.get('default_value', None),
-                    has_options='fieldoption_set' in fs_values,
+                    has_options='fieldoption_set' in fs_values and fs_values['fieldoption_set'],
                 )
                 for fs_values in updates['fieldschema_set']
             ], ['field_key'], [
