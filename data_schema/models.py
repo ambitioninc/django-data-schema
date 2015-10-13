@@ -220,7 +220,7 @@ class FieldOption(models.Model):
     Specifies a set of possible values that a field schema can have
     """
     field_schema = models.ForeignKey(FieldSchema)
-    value = models.CharField(max_length=300)
+    value = models.CharField(max_length=1024)
 
     class Meta:
         unique_together = ('field_schema', 'value')
