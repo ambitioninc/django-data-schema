@@ -16,10 +16,11 @@ class DataSchemaManager(ManagerUtilsManager):
 
 
 class DataSchema(models.Model):
-    """
-    A configuration for a metric record that is tracked by animal. Specifies the main options and
-    allows MetricRecordFieldConfigs to be attached to it, which specify the schema of the metric
-    record. Also defines a unique name for the metric record and a display name.
+    """Define a schema information about a unit of data, such as a
+    dictionary, list or model.
+
+    ``FieldSchema`` objects are created referencing a ``DataSchema``
+    to describe individual fields within the unit of data.
     """
     # The content type of the django model for which this schema is related. If None, this schema is
     # for a dictionary of data.
