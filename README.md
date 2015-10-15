@@ -46,7 +46,7 @@ types are listed in the ``FieldSchemaType`` class. These types are listed here, 
 - ``FieldSchemaType.STRING``: A python ``str``.
 - ``FieldSchemaType.BOOLEAN``: A python ``bool``.
 
-Note that these fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the ``get_value`` function operates are detailed below.
+These fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the ``get_value`` function operates are detailed below.
 
 ### Using get_value on DATE or DATETIME fields
 The ``get_value`` function has the following behavior on DATE and DATETIME fields:
@@ -75,8 +75,8 @@ The ``get_value`` function has the following behavior on a STRING field:
 The ``get_value`` function has the following behavior on a BOOLEAN field:
 
 - Bool data types will return True or False
-- All true string values return True ('t', 'T', 'true', 'True', 'TRUE', 1, '1')
-- All false string values return False ('f', 'F', 'false', 'False', 'FALSE', 0, '0')
+- Truthy looking string values return True ('t', 'T', 'true', 'True', 'TRUE', 1, '1')
+- Falsy looking string values return False ('f', 'F', 'false', 'False', 'FALSE', 0, '0')
 - If called on None, the default value (or None) is returned.
 
 ## Examples
