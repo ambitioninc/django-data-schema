@@ -18,8 +18,8 @@ pip install django-data-schema
 ```
 
 ## Model Overview
-Django data schema defines three models for building schemas on data. These models are ``DataSchema`` and
-``FieldSchema``.
+Django data schema defines three models for building schemas on data. These models are ``DataSchema``,
+``FieldSchema``, and ``FieldOptional``.
 
 The ``DataSchema`` model provides a ``model_content_type`` field that points to a Django ``ContentType`` model.
 This field represents which object this schema is modeling. If the field is None, it is assumed that
