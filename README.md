@@ -139,4 +139,6 @@ print revenue_field_schema.get_value({'revenue': '$15,000,456.23'})
 15000456.23
 ```
 
-Note that ``FieldSchema`` objects have an analogous ``set_value`` function for setting the value of a field.
+Note that ``FieldSchema`` objects have an analogous ``set_value`` method for setting the value of a field.
+The ``set_value`` method does not do any data conversions, so when calling this method, be sure to use a value
+that is in the correct format.
