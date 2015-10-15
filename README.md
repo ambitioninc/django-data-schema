@@ -28,22 +28,22 @@ this schema models an object such as a dictionary or list.
 After the enclosing ``DataSchema`` has been defined, various ``FieldSchema`` models can reference the main
 data schema. ``FieldSchema`` models provide the following attributes:
 
-- field_key: The name of the field. Used to identify a field in a dictionary or model.
-- field_position: The position of the field. Used to identify a field in a list.
-- uniqueness_order: The order of this field in the uniqueness constraint of the schema. Defaults to None.
-- field_type: The type of field. More on the field types below.
-- field_format: An optional formatting string for the field. Used differently depending on the field type and documented more below.
-- default_value: If the field returns None, this default value will be returned instead.
+- ``field_key``: The name of the field. Used to identify a field in a dictionary or model.
+- ``field_position``: The position of the field. Used to identify a field in a list.
+- ``uniqueness_order``: The order of this field in the uniqueness constraint of the schema. Defaults to None.
+- ``field_type``: The type of field. More on the field types below.
+- ``field_format``: An optional formatting string for the field. Used differently depending on the field type and documented more below.
+- ``default_value``: If the field returns None, this default value will be returned instead.
 
 A ``FieldSchema`` object must specify its data type, which can be any of the types in the
 ``FieldSchemaType`` class. These types are as follows:
 
-- FieldSchemaType.DATE: A python ``date`` object from the ``datetime`` module. Currently returned as a ``datetime`` object.
-- FieldSchemaType.DATETIME: A python ``datetime`` object from the ``datetime`` module.
-- FieldSchemaType.INT: A python ``int``.
-- FieldSchemaType.FLOAT: A python ``float``.
-- FieldSchemaType.STRING: A python ``str``.
-- FieldSchemaType.BOOLEAN: A python ``bool``.
+- ``FieldSchemaType.DATE``: A python ``date`` object from the ``datetime`` module. Currently returned as a ``datetime`` object.
+- ``FieldSchemaType.DATETIME``: A python ``datetime`` object from the ``datetime`` module.
+- ``FieldSchemaType.INT``: A python ``int``.
+- ``FieldSchemaType.FLOAT``: A python ``float``.
+- ``FieldSchemaType.STRING``: A python ``str``.
+- ``FieldSchemaType.BOOLEAN``: A python ``bool``.
 
 Note that these fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the ``get_value`` function operates are detailed below.
 
