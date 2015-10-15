@@ -35,8 +35,9 @@ data schema. ``FieldSchema`` models provide the following attributes:
 - ``field_format``: An optional formatting string for the field. Used differently depending on the field type and documented more below.
 - ``default_value``: If the field returns None, this default value will be returned instead.
 
-A ``FieldSchema`` object must specify its data type, which can be any of the types in the
-``FieldSchemaType`` class. These types are as follows:
+A ``FieldSchema`` object must specify its data type. While data of a given type can be stored in different formats,
+django-data-schema normalizes the data when accessing it through ``get_value``, described below. The available
+types are listed in the ``FieldSchemaType`` class. These types are listed here, with the type they normalize to:
 
 - ``FieldSchemaType.DATE``: A python ``date`` object from the ``datetime`` module. Currently returned as a ``datetime`` object.
 - ``FieldSchemaType.DATETIME``: A python ``datetime`` object from the ``datetime`` module.
