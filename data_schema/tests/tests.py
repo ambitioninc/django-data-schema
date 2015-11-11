@@ -8,6 +8,18 @@ from mock import patch
 import pytz
 
 from data_schema.models import DataSchema, FieldSchema, FieldSchemaType, FieldOption
+from data_schema.convert_value import ValueConverter
+
+
+class ValueConverterTest(TestCase):
+    def test_is_numeric(self):
+        converter = ValueConverter(FieldSchemaType.FLOAT, float)
+        self.assertTrue(converter.is_numeric(0))
+        self.assertTrue(converter.is_numeric(100))
+        self.assertTrue(converter.is_numeric(1.34))
+        self.assertTrue(converter.is_numeric(1.34e2))
+        self.assertFalse(converter.is_numeric('foo'))
+        self.assertFalse(converter.is_numeric({'foo': 'bar'}))
 
 
 class FieldSchemaTypeTest(TestCase):
