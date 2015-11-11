@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.test import SimpleTestCase
 
 from data_schema import FieldSchemaType
@@ -54,6 +56,21 @@ class BooleanConverterTest(SimpleTestCase):
         self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, ''))
         self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, 'string'))
         self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, 5))
+
+    def test_convert_datetime(self):
+        """
+        Verifies that datetime field type attempts to coerce to timestamp before
+        attempting to parse the string as a date string
+        """
+        # still
+        self.assertIsInstance(convert_value(FieldSchemaType.DATETIME, 1447251508), datetime)
+        self.assertIsInstance(convert_value(FieldSchemaType.DATETIME, 1447251508.1234), datetime)
+        self.assertIsInstance(convert_value(FieldSchemaType.DATETIME, 1.447251508e9), datetime)
+        self.assertIsInstance(convert_value(FieldSchemaType.DATETIME, '1447251508'), datetime)
+        self.assertIsInstance(convert_value(FieldSchemaType.DATETIME, '1447251508.1234'), datetime)
+        self.assertIsInstance(convert_value(FieldSchemaType.DATETIME, '1.447251508e9'), datetime)
+        # parses date strings
+        self.assertIsInstance(convert_value(FieldSchemaType.DATETIME, '2015-11-09 15:30:00'), datetime)
 
     def test_convert_value_default(self):
         """
