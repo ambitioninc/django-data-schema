@@ -18,8 +18,8 @@ pip install django-data-schema
 ```
 
 ## Model Overview
-Django data schema defines three models for building schemas on data. These models are ``DataSchema`` and
-``FieldSchema``.
+Django data schema defines three models for building schemas on data. These models are ``DataSchema``,
+``FieldSchema``, and ``FieldOptional``.
 
 The ``DataSchema`` model provides a ``model_content_type`` field that points to a Django ``ContentType`` model.
 This field represents which object this schema is modeling. If the field is None, it is assumed that
@@ -28,24 +28,25 @@ this schema models an object such as a dictionary or list.
 After the enclosing ``DataSchema`` has been defined, various ``FieldSchema`` models can reference the main
 data schema. ``FieldSchema`` models provide the following attributes:
 
-- field_key: The name of the field. Used to identify a field in a dictionary or model.
-- field_position: The position of the field. Used to identify a field in a list.
-- uniqueness_order: The order of this field in the uniqueness constraint of the schema. Defaults to None.
-- field_type: The type of field. More on the field types below.
-- field_format: An optional formatting string for the field. Used differently depending on the field type and documented more below.
-- default_value: If the field returns None, this default value will be returned instead.
+- ``field_key``: The name of the field. Used to identify a field in a dictionary or model.
+- ``field_position``: The position of the field. Used to identify a field in a list.
+- ``uniqueness_order``: The order of this field in the uniqueness constraint of the schema. Defaults to None.
+- ``field_type``: The type of field. More on the field types below.
+- ``field_format``: An optional formatting string for the field. Used differently depending on the field type and documented more below.
+- ``default_value``: If the field returns None, this default value will be returned instead.
 
-A ``FieldSchema`` object must specify its data type, which can be any of the types in the
-``FieldSchemaType`` class. These types are as follows:
+A ``FieldSchema`` object must specify its data type. While data of a given type can be stored in different formats,
+django-data-schema normalizes the data when accessing it through ``get_value``, described below. The available
+types are listed in the ``FieldSchemaType`` class. These types are listed here, with the type they normalize to:
 
-- FieldSchemaType.DATE: A python ``date`` object from the ``datetime`` module. Currently returned as a ``datetime`` object.
-- FieldSchemaType.DATETIME: A python ``datetime`` object from the ``datetime`` module.
-- FieldSchemaType.INT: A python ``int``.
-- FieldSchemaType.FLOAT: A python ``float``.
-- FieldSchemaType.STRING: A python ``str``.
-- FieldSchemaType.BOOLEAN: A python ``bool``.
+- ``FieldSchemaType.DATE``: A python ``date`` object from the ``datetime`` module. Currently returned as a ``datetime`` object.
+- ``FieldSchemaType.DATETIME``: A python ``datetime`` object from the ``datetime`` module.
+- ``FieldSchemaType.INT``: A python ``int``.
+- ``FieldSchemaType.FLOAT``: A python ``float``.
+- ``FieldSchemaType.STRING``: A python ``str``.
+- ``FieldSchemaType.BOOLEAN``: A python ``bool``.
 
-Note that these fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the ``get_value`` function operates are detailed below.
+These fields provide the necessary conversion mechanisms when accessing data via ``FieldSchema.get_value``. Differences in how the ``get_value`` function operates are detailed below.
 
 ### Using get_value on DATE or DATETIME fields
 The ``get_value`` function has the following behavior on DATE and DATETIME fields:
@@ -74,8 +75,8 @@ The ``get_value`` function has the following behavior on a STRING field:
 The ``get_value`` function has the following behavior on a BOOLEAN field:
 
 - Bool data types will return True or False
-- All true string values return True ('t', 'T', 'true', 'True', 'TRUE', 1, '1')
-- All false string values return False ('f', 'F', 'false', 'False', 'FALSE', 0, '0')
+- Truthy looking string values return True ('t', 'T', 'true', 'True', 'TRUE', 1, '1')
+- Falsy looking string values return False ('f', 'F', 'false', 'False', 'FALSE', 0, '0')
 - If called on None, the default value (or None) is returned.
 
 ## Examples
@@ -138,4 +139,6 @@ print revenue_field_schema.get_value({'revenue': '$15,000,456.23'})
 15000456.23
 ```
 
-Note that ``FieldSchema`` objects have an analogous ``set_value`` function for setting the value of a field.
+Note that ``FieldSchema`` objects have an analogous ``set_value`` method for setting the value of a field.
+The ``set_value`` method does not do any data conversions, so when calling this method, be sure to use a value
+that is in the correct format.

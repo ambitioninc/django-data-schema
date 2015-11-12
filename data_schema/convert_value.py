@@ -120,9 +120,11 @@ class DatetimeConverter(ValueConverter):
         it assumes it is a unix timestamp. This function also takes care of converting any
         aware datetimes to naive UTC.
         """
-        if self.is_numeric(value):
-            value = datetime.utcfromtimestamp(value)
-        elif self.is_string(value):
+        try:
+            value = datetime.utcfromtimestamp(float(value))
+        except Exception:
+            pass
+        if self.is_string(value):
             value = datetime.strptime(value, format_str) if format_str else parse(value)
 
         # Convert any aware datetime objects to naive utc
