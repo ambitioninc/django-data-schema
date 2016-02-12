@@ -37,7 +37,7 @@ setup(
     license='MIT',
     install_requires=[
         'django>=1.7',
-        'django-manager-utils>=0.8.2',
+        'django-manager-utils>=0.9.0',
         'fleming>=0.4',
         'python-dateutil>=2.2',
     ],
