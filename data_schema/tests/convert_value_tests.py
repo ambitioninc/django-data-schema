@@ -2,7 +2,7 @@ from datetime import datetime
 
 from django.test import SimpleTestCase
 
-from data_schema import FieldSchemaType
+from data_schema.models import FieldSchemaType
 from data_schema.convert_value import convert_value
 
 
