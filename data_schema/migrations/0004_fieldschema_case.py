@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='fieldschema',
-            name='case',
+            name='transform_case',
             field=models.CharField(blank=True, default=None, max_length=5, null=True),
         ),
     ]
