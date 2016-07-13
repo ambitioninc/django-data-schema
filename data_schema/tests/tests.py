@@ -7,7 +7,8 @@ from django_dynamic_fixture import G
 from mock import patch
 import pytz
 
-from data_schema.models import DataSchema, FieldSchema, FieldSchemaType, FieldOption, FieldSchemaCase
+from data_schema.models import DataSchema, FieldSchema, FieldOption
+from data_schema.field_schema_type import FieldSchemaCase, FieldSchemaType
 from data_schema.convert_value import ValueConverter
 
 
