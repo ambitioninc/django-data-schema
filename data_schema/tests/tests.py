@@ -373,7 +373,7 @@ class DataSchemaTest(TestCase):
             'field_key': 'value',
         }
         data_schema.get_value(obj, 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', None, None, None)
 
     def test_get_value_dict_cached(self):
         """
@@ -402,7 +402,7 @@ class DataSchemaTest(TestCase):
             FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format',
             data_schema=data_schema)
         data_schema.get_value(Input(), 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list(self, convert_value_mock):
@@ -414,7 +414,7 @@ class DataSchemaTest(TestCase):
             FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING,
             data_schema=data_schema)
         data_schema.get_value(['hello', 'world'], 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None, None)
 
 
 class FieldSchemaTest(TestCase):
@@ -457,7 +457,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING)
         field_schema.get_value({'field_key': 'hello'})
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'hello', None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'hello', None, None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_obj(self, convert_value_mock):
@@ -469,7 +469,7 @@ class FieldSchemaTest(TestCase):
 
         field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format')
         field_schema.get_value(Input())
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list(self, convert_value_mock):
@@ -478,7 +478,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_dict_non_extant(self, convert_value_mock):
@@ -487,7 +487,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key_bad', field_type=FieldSchemaType.STRING)
         field_schema.get_value({'field_key': 'hello'})
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_obj_non_extant(self, convert_value_mock):
@@ -500,7 +500,7 @@ class FieldSchemaTest(TestCase):
         field_schema = G(
             FieldSchema, field_key='field_key_bad', field_type=FieldSchemaType.STRING, field_format='format')
         field_schema.get_value(Input())
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, 'format', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, 'format', None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list_non_extant_negative(self, convert_value_mock):
@@ -509,7 +509,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_position=-1, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list_non_extant_out_of_range(self, convert_value_mock):
@@ -519,7 +519,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_position=2, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None, None)
 
     def test_set_display_name(self):
         """

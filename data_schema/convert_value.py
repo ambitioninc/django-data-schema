@@ -9,7 +9,7 @@ from dateutil.parser import parse
 import fleming
 import pytz
 
-from data_schema.field_schema_type import FieldSchemaType
+from data_schema.field_schema_type import FieldSchemaType, FieldSchemaCase
 
 
 class ValueConverter(object):
@@ -145,7 +145,7 @@ class StringConverter(ValueConverter):
             value = value if re.match(format_str, value) else None
 
         if value and case:
-            if case == 'lower':
+            if case == FieldSchemaCase.LOWER:
                 value = value.lower()
             else:
                 value = value.upper()
