@@ -97,7 +97,7 @@ class DataSchemaUpdateTest(TestCase):
             'field_position': 1,
             'field_format': 'format',
             'default_value': '',
-            'case': FieldSchemaCase.LOWER,
+            'transform_case': FieldSchemaCase.LOWER,
         }, {
             'field_key': 'date',
             'field_type': 'DATETIME',
@@ -118,7 +118,7 @@ class DataSchemaUpdateTest(TestCase):
         self.assertEquals(fs.field_format, 'format2')
         self.assertEquals(fs.default_value, 'default')
         self.assertFalse(fs.has_options)
-        self.assertIsNone(fs.case)
+        self.assertIsNone(fs.transform_case)
 
         fs = ds.fieldschema_set.all().order_by('field_key')[1]
         self.assertEquals(fs.field_key, 'email')
@@ -129,7 +129,7 @@ class DataSchemaUpdateTest(TestCase):
         self.assertEquals(fs.field_format, 'format')
         self.assertEquals(fs.default_value, '')
         self.assertFalse(fs.has_options)
-        self.assertEquals(fs.case, FieldSchemaCase.LOWER)
+        self.assertEquals(fs.transform_case, FieldSchemaCase.LOWER)
 
     def test_field_schema_set_preexisting_values_w_options(self):
         ds = G(DataSchema)
@@ -884,7 +884,9 @@ class StringFieldSchemaTest(TestCase):
         """
         Tests that the string is converted to lowercase
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, case=FieldSchemaCase.LOWER)
+        field_schema = G(
+            FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, transform_case=FieldSchemaCase.LOWER
+        )
         val = field_schema.get_value({'val': 'Value'})
         self.assertEquals(val, 'value')
 
@@ -892,7 +894,9 @@ class StringFieldSchemaTest(TestCase):
         """
         Tests that the string is converted to uppercase
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, case=FieldSchemaCase.UPPER)
+        field_schema = G(
+            FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, transform_case=FieldSchemaCase.UPPER
+        )
         val = field_schema.get_value({'val': 'Value'})
         self.assertEquals(val, 'VALUE')
 

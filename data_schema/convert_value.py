@@ -37,7 +37,7 @@ class ValueConverter(object):
         """
         return isinstance(value, self.NUMBER_TYPES)
 
-    def _preprocess_value(self, value, format_str, case=None):
+    def _preprocess_value(self, value, format_str, transform_case=None):
         """
         Preprocesses the value depending on the field schema type.
         """
@@ -63,11 +63,11 @@ class ValueConverter(object):
             e.expected_type = self._field_schema_type
             raise e
 
-    def __call__(self, value, format_str, default_value, case=None):
+    def __call__(self, value, format_str, default_value, transform_case=None):
         """
         Converts a provided value to the configured python type.
         """
-        value = self._preprocess_value(value, format_str, case=case)
+        value = self._preprocess_value(value, format_str, transform_case=transform_case)
 
         # Set the value to the default if it is None and there is a default
         value = default_value if value is None and default_value is not None else value
@@ -98,11 +98,11 @@ class NumericConverter(ValueConverter):
     # A compiled regex for extracting non-numeric characters
     NON_NUMERIC_REGEX = re.compile(r'[^\d\.\-\e\E]+')
 
-    def _preprocess_value(self, value, format_str, case=None):
+    def _preprocess_value(self, value, format_str, transform_case=None):
         """
         Strips out any non-numeric characters for numeric values if they are a string.
         """
-        value = super(NumericConverter, self)._preprocess_value(value, format_str, case=case)
+        value = super(NumericConverter, self)._preprocess_value(value, format_str, transform_case=transform_case)
         if self.is_string(value):
             value = self.NON_NUMERIC_REGEX.sub('', value) or None
 
@@ -135,12 +135,12 @@ class StringConverter(ValueConverter):
     """
     Converts string values.
     """
-    def _preprocess_value(self, value, format_str, case=None):
+    def _preprocess_value(self, value, format_str, transform_case=None):
         """
         Performs additional regex matching for any provided format string. If the value
         does not match the format string, None is returned.
         """
-        value = super(StringConverter, self)._preprocess_value(value, format_str, case=case)
+        value = super(StringConverter, self)._preprocess_value(value, format_str, transform_case=transform_case)
         if self.is_string(value) and format_str:
             value = value if re.match(format_str, value) else None
 
@@ -164,7 +164,7 @@ FIELD_SCHEMA_CONVERTERS = {
 }
 
 
-def convert_value(field_schema_type, value, format_str=None, default_value=None, case=None):
+def convert_value(field_schema_type, value, format_str=None, default_value=None, transform_case=None):
     """
     Converts a value to a type with an optional format string.
     """

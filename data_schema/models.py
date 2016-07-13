@@ -67,7 +67,7 @@ class DataSchema(models.Model):
                     field_format=fs_values.get('field_format', None),
                     default_value=fs_values.get('default_value', None),
                     has_options='fieldoption_set' in fs_values and fs_values['fieldoption_set'],
-                    case=fs_values.get('case', None),
+                    transform_case=fs_values.get('transform_case', None),
                 )
                 for fs_values in updates['fieldschema_set']
             ], ['field_key'], [
@@ -173,7 +173,7 @@ class FieldSchema(models.Model):
     has_options = models.BooleanField(default=False)
 
     # Only applies to string data types. Valid options are upper and lower
-    case = models.CharField(null=True, default=None, blank=True, max_length=5)
+    transform_case = models.CharField(null=True, default=None, blank=True, max_length=5)
 
     # Use django manager utils to manage FieldSchema objects
     objects = ManagerUtilsManager()
