@@ -72,7 +72,7 @@ class DataSchema(models.Model):
                 for fs_values in updates['fieldschema_set']
             ], ['field_key'], [
                 'display_name', 'field_key', 'field_type', 'uniqueness_order', 'field_position',
-                'field_format', 'default_value', 'has_options', 'case'
+                'field_format', 'default_value', 'has_options', 'transform_case'
             ])
 
             # Sync the options of the field schema models if they are present
