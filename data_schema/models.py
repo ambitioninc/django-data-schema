@@ -67,11 +67,12 @@ class DataSchema(models.Model):
                     field_format=fs_values.get('field_format', None),
                     default_value=fs_values.get('default_value', None),
                     has_options='fieldoption_set' in fs_values and fs_values['fieldoption_set'],
+                    case=fs_values.get('case', None),
                 )
                 for fs_values in updates['fieldschema_set']
             ], ['field_key'], [
                 'display_name', 'field_key', 'field_type', 'uniqueness_order', 'field_position',
-                'field_format', 'default_value', 'has_options'
+                'field_format', 'default_value', 'has_options', 'case'
             ])
 
             # Sync the options of the field schema models if they are present
