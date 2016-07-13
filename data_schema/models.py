@@ -56,21 +56,6 @@ class DataSchema(models.Model):
 
         if 'fieldschema_set' in updates:
             # Sync the field schema models
-            field_schemas = [
-                FieldSchema(
-                    data_schema=self,
-                    field_key=fs_values['field_key'],
-                    display_name=fs_values.get('display_name', ''),
-                    field_type=fs_values['field_type'],
-                    uniqueness_order=fs_values.get('uniqueness_order', None),
-                    field_position=fs_values.get('field_position', None),
-                    field_format=fs_values.get('field_format', None),
-                    default_value=fs_values.get('default_value', None),
-                    has_options='fieldoption_set' in fs_values and fs_values['fieldoption_set'],
-                )
-                for fs_values in updates['fieldschema_set']
-            ]
-
             sync(self.fieldschema_set.all(), [
                 FieldSchema(
                     data_schema=self,
@@ -88,7 +73,6 @@ class DataSchema(models.Model):
                 'display_name', 'field_key', 'field_type', 'uniqueness_order', 'field_position',
                 'field_format', 'default_value', 'has_options'
             ])
-            self.refresh_from_db()
 
             # Sync the options of the field schema models if they are present
             for fs_values in updates['fieldschema_set']:
