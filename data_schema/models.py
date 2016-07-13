@@ -212,7 +212,7 @@ class FieldSchema(models.Model):
         else:
             value = getattr(obj, self.field_key) if hasattr(obj, self.field_key) else None
 
-        return convert_value(self.field_type, value, self.field_format, self.default_value, self.case)
+        return convert_value(self.field_type, value, self.field_format, self.default_value, self.transform_case)
 
     def save(self, *args, **kwargs):
         if not self.display_name:
