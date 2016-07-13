@@ -144,8 +144,8 @@ class StringConverter(ValueConverter):
         if self.is_string(value) and format_str:
             value = value if re.match(format_str, value) else None
 
-        if value and case:
-            if case == FieldSchemaCase.LOWER:
+        if value and transform_case:
+            if transform_case == FieldSchemaCase.LOWER:
                 value = value.lower()
             else:
                 value = value.upper()
@@ -168,4 +168,4 @@ def convert_value(field_schema_type, value, format_str=None, default_value=None,
     """
     Converts a value to a type with an optional format string.
     """
-    return FIELD_SCHEMA_CONVERTERS[field_schema_type](value, format_str, default_value, case)
+    return FIELD_SCHEMA_CONVERTERS[field_schema_type](value, format_str, default_value, transform_case)
