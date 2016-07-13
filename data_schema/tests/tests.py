@@ -7,7 +7,7 @@ from django_dynamic_fixture import G
 from mock import patch
 import pytz
 
-from data_schema.models import DataSchema, FieldSchema, FieldSchemaType, FieldOption
+from data_schema.models import DataSchema, FieldSchema, FieldSchemaType, FieldOption, FieldSchemaCase
 from data_schema.convert_value import ValueConverter
 
 
@@ -875,6 +875,22 @@ class StringFieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': 5.2})
         self.assertEquals(val, '5.2')
+
+    def test_lowercase(self):
+        """
+        Tests that the string is converted to lowercase
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, case=FieldSchemaCase.LOWER)
+        val = field_schema.get_value({'val': 'Value'})
+        self.assertEquals(val, 'value')
+
+    def test_uppercase(self):
+        """
+        Tests that the string is converted to uppercase
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, case=FieldSchemaCase.UPPER)
+        val = field_schema.get_value({'val': 'Value'})
+        self.assertEquals(val, 'VALUE')
 
 
 class FloatFieldSchemaTest(TestCase):

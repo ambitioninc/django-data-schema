@@ -22,3 +22,8 @@ class FieldSchemaType(object):
 
         types.sort()
         return types
+
+
+class FieldSchemaCase(object):
+    LOWER = 'LOWER'
+    UPPER = 'UPPER'
