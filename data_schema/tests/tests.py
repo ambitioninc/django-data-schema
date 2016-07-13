@@ -97,6 +97,7 @@ class DataSchemaUpdateTest(TestCase):
             'field_position': 1,
             'field_format': 'format',
             'default_value': '',
+            'case': FieldSchemaCase.LOWER,
         }, {
             'field_key': 'date',
             'field_type': 'DATETIME',
@@ -117,6 +118,7 @@ class DataSchemaUpdateTest(TestCase):
         self.assertEquals(fs.field_format, 'format2')
         self.assertEquals(fs.default_value, 'default')
         self.assertFalse(fs.has_options)
+        self.assertIsNone(fs.case)
 
         fs = ds.fieldschema_set.all().order_by('field_key')[1]
         self.assertEquals(fs.field_key, 'email')
@@ -127,6 +129,7 @@ class DataSchemaUpdateTest(TestCase):
         self.assertEquals(fs.field_format, 'format')
         self.assertEquals(fs.default_value, '')
         self.assertFalse(fs.has_options)
+        self.assertEquals(fs.case, FieldSchemaCase.LOWER)
 
     def test_field_schema_set_preexisting_values_w_options(self):
         ds = G(DataSchema)
