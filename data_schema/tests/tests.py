@@ -7,7 +7,8 @@ from django_dynamic_fixture import G
 from mock import patch
 import pytz
 
-from data_schema.models import DataSchema, FieldSchema, FieldSchemaType, FieldOption
+from data_schema.models import DataSchema, FieldSchema, FieldOption
+from data_schema.field_schema_type import FieldSchemaCase, FieldSchemaType
 from data_schema.convert_value import ValueConverter
 
 
@@ -96,6 +97,7 @@ class DataSchemaUpdateTest(TestCase):
             'field_position': 1,
             'field_format': 'format',
             'default_value': '',
+            'transform_case': FieldSchemaCase.LOWER,
         }, {
             'field_key': 'date',
             'field_type': 'DATETIME',
@@ -116,6 +118,7 @@ class DataSchemaUpdateTest(TestCase):
         self.assertEquals(fs.field_format, 'format2')
         self.assertEquals(fs.default_value, 'default')
         self.assertFalse(fs.has_options)
+        self.assertIsNone(fs.transform_case)
 
         fs = ds.fieldschema_set.all().order_by('field_key')[1]
         self.assertEquals(fs.field_key, 'email')
@@ -126,6 +129,7 @@ class DataSchemaUpdateTest(TestCase):
         self.assertEquals(fs.field_format, 'format')
         self.assertEquals(fs.default_value, '')
         self.assertFalse(fs.has_options)
+        self.assertEquals(fs.transform_case, FieldSchemaCase.LOWER)
 
     def test_field_schema_set_preexisting_values_w_options(self):
         ds = G(DataSchema)
@@ -372,7 +376,7 @@ class DataSchemaTest(TestCase):
             'field_key': 'value',
         }
         data_schema.get_value(obj, 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', None, None, None)
 
     def test_get_value_dict_cached(self):
         """
@@ -401,7 +405,7 @@ class DataSchemaTest(TestCase):
             FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format',
             data_schema=data_schema)
         data_schema.get_value(Input(), 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list(self, convert_value_mock):
@@ -413,7 +417,7 @@ class DataSchemaTest(TestCase):
             FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING,
             data_schema=data_schema)
         data_schema.get_value(['hello', 'world'], 'field_key')
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None, None)
 
 
 class FieldSchemaTest(TestCase):
@@ -456,7 +460,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING)
         field_schema.get_value({'field_key': 'hello'})
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'hello', None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'hello', None, None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_obj(self, convert_value_mock):
@@ -468,7 +472,7 @@ class FieldSchemaTest(TestCase):
 
         field_schema = G(FieldSchema, field_key='field_key', field_type=FieldSchemaType.STRING, field_format='format')
         field_schema.get_value(Input())
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list(self, convert_value_mock):
@@ -477,7 +481,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_position=1, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_dict_non_extant(self, convert_value_mock):
@@ -486,7 +490,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key_bad', field_type=FieldSchemaType.STRING)
         field_schema.get_value({'field_key': 'hello'})
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_obj_non_extant(self, convert_value_mock):
@@ -499,7 +503,7 @@ class FieldSchemaTest(TestCase):
         field_schema = G(
             FieldSchema, field_key='field_key_bad', field_type=FieldSchemaType.STRING, field_format='format')
         field_schema.get_value(Input())
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, 'format', None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, 'format', None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list_non_extant_negative(self, convert_value_mock):
@@ -508,7 +512,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_position=-1, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None, None)
 
     @patch('data_schema.models.convert_value', set_spec=True)
     def test_get_value_list_non_extant_out_of_range(self, convert_value_mock):
@@ -518,7 +522,7 @@ class FieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='field_key', field_position=2, field_type=FieldSchemaType.STRING)
         field_schema.get_value(['hello', 'world'])
-        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None)
+        convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None, None)
 
     def test_set_display_name(self):
         """
@@ -875,6 +879,26 @@ class StringFieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': 5.2})
         self.assertEquals(val, '5.2')
+
+    def test_lowercase(self):
+        """
+        Tests that the string is converted to lowercase
+        """
+        field_schema = G(
+            FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, transform_case=FieldSchemaCase.LOWER
+        )
+        val = field_schema.get_value({'val': 'Value'})
+        self.assertEquals(val, 'value')
+
+    def test_uppercase(self):
+        """
+        Tests that the string is converted to uppercase
+        """
+        field_schema = G(
+            FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, transform_case=FieldSchemaCase.UPPER
+        )
+        val = field_schema.get_value({'val': 'Value'})
+        self.assertEquals(val, 'VALUE')
 
 
 class FloatFieldSchemaTest(TestCase):
