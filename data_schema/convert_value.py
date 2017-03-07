@@ -109,6 +109,25 @@ class NumericConverter(ValueConverter):
         return value
 
 
+class DurationConverter(ValueConverter):
+    """
+    Converts durations from [hh]:mm:ss format to integer number of seconds
+    """
+    TIME_FORMAT_DURATION_REGEXP = re.compile(r'^\d{1,2}:\d{1,2}(:\d{1,2})?$')
+
+    def __call__(self, value, format_str, default_value, transform_case=None):
+        if self.is_string(value) and self.TIME_FORMAT_DURATION_REGEXP.match(value) is not None:
+            return super(DurationConverter, self).__call__(value, format_str, default_value, transform_case)
+        return NumericConverter(FieldSchemaType.INT, int)(value, format_str, default_value, transform_case)
+
+    def _convert_value(self, value, format_str):
+        duration_constituents = value.split(':')
+        value = int(duration_constituents[-2]) * 60 + int(duration_constituents[-1])
+        if len(duration_constituents) == 3:
+            value += int(duration_constituents[0]) * 3600
+        return value
+
+
 class DatetimeConverter(ValueConverter):
     """
     Converts datetime values (date and datetime).
@@ -161,6 +180,7 @@ FIELD_SCHEMA_CONVERTERS = {
     FieldSchemaType.FLOAT: NumericConverter(FieldSchemaType.FLOAT, float),
     FieldSchemaType.STRING: StringConverter(FieldSchemaType.STRING, six.text_type),
     FieldSchemaType.BOOLEAN: BooleanConverter(FieldSchemaType.BOOLEAN, bool),
+    FieldSchemaType.DURATION: DurationConverter(FieldSchemaType.DURATION, int),
 }
 
 
