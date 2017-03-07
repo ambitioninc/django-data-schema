@@ -78,3 +78,36 @@ class BooleanConverterTest(SimpleTestCase):
         """
         self.assertTrue(convert_value(FieldSchemaType.BOOLEAN, None, default_value=True))
         self.assertIsNone(convert_value(FieldSchemaType.BOOLEAN, 'invalid', default_value=True))
+
+
+class DurationConverterTest(SimpleTestCase):
+
+    def test_convert_valid_simple_number(self):
+        """
+        Verifies that a simple number conversion will be used
+        """
+        self.assertEqual(70, convert_value(FieldSchemaType.DURATION, '70'))
+
+    def test_convert_minutes_seconds(self):
+        """
+        Verifies that a string of the format mm:ss will be converted correctly
+        """
+        self.assertEqual(65, convert_value(FieldSchemaType.DURATION, '01:05'))
+        self.assertEqual(65, convert_value(FieldSchemaType.DURATION, '1:5'))
+        self.assertEqual(65, convert_value(FieldSchemaType.DURATION, '01:5'))
+
+    def test_convert_hours_minutes_seconds(self):
+        """
+        Verifies that a string of the format hh:mm:ss will be converted correctly
+        """
+        self.assertEqual(7265, convert_value(FieldSchemaType.DURATION, '02:01:05'))
+        self.assertEqual(7265, convert_value(FieldSchemaType.DURATION, '02:01:5'))
+        self.assertEqual(7265, convert_value(FieldSchemaType.DURATION, '02:1:5'))
+        self.assertEqual(7265, convert_value(FieldSchemaType.DURATION, '2:1:5'))
+
+    def test_convert_invalid(self):
+        """
+        Verifies that an altogether invalid string results in a value of None
+        """
+        self.assertIsNone(convert_value(FieldSchemaType.DURATION, 'sup'))
+        self.assertIsNone(convert_value(FieldSchemaType.DURATION, ':::'))
