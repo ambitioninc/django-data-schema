@@ -32,6 +32,7 @@ class FieldSchemaTypeTest(TestCase):
             ('FLOAT', 'FLOAT'),
             ('STRING', 'STRING'),
             ('BOOLEAN', 'BOOLEAN'),
+            ('DURATION', 'DURATION'),
         ])
         self.assertEquals(expected_choices, set(FieldSchemaType.choices()))
 
