@@ -8,6 +8,7 @@ class FieldSchemaType(object):
     FLOAT = 'FLOAT'
     STRING = 'STRING'
     BOOLEAN = 'BOOLEAN'
+    DURATION = 'DURATION'
 
     @classmethod
     def choices(cls):
