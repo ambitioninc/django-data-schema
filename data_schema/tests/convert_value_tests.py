@@ -111,3 +111,14 @@ class DurationConverterTest(SimpleTestCase):
         """
         self.assertIsNone(convert_value(FieldSchemaType.DURATION, 'sup'))
         self.assertIsNone(convert_value(FieldSchemaType.DURATION, ':::'))
+
+
+class DateFlooredConverterTest(SimpleTestCase):
+
+    def test_convert(self):
+        """
+        Verify that the value of a datetime field is floored to the date
+        """
+        self.assertEqual(datetime(2017, 3, 1, 0), convert_value(FieldSchemaType.DATE_FLOORED, '2017-03-01T10:30.000Z'))
+        self.assertEqual(datetime(2017, 3, 1, 0), convert_value(FieldSchemaType.DATE_FLOORED, '2017-03-01 10:30.00'))
+        self.assertEqual(datetime(2017, 3, 1, 0), convert_value(FieldSchemaType.DATE_FLOORED, '2017-03-01'))
