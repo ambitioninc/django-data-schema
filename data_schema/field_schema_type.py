@@ -4,6 +4,7 @@ class FieldSchemaType(object):
     """
     DATE = 'DATE'
     DATETIME = 'DATETIME'
+    DATE_FLOORED = 'DATE_FLOORED'
     INT = 'INT'
     FLOAT = 'FLOAT'
     STRING = 'STRING'

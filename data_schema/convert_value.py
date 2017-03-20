@@ -150,6 +150,15 @@ class DatetimeConverter(ValueConverter):
         return value if value.tzinfo is None else fleming.convert_to_tz(value, pytz.utc, return_naive=True)
 
 
+class DateFlooredConverter(DatetimeConverter):
+    """
+    Floors datetime values (date and datetime) to date
+    """
+    def _convert_value(self, value, format_str):
+        value = super(DateFlooredConverter, self)._convert_value(value, format_str)
+        return fleming.floor(value, day=1)
+
+
 class StringConverter(ValueConverter):
     """
     Converts string values.
@@ -176,6 +185,7 @@ class StringConverter(ValueConverter):
 FIELD_SCHEMA_CONVERTERS = {
     FieldSchemaType.DATE: DatetimeConverter(FieldSchemaType.DATE, datetime),
     FieldSchemaType.DATETIME: DatetimeConverter(FieldSchemaType.DATETIME, datetime),
+    FieldSchemaType.DATE_FLOORED: DateFlooredConverter(FieldSchemaType.DATE_FLOORED, datetime),
     FieldSchemaType.INT: NumericConverter(FieldSchemaType.INT, int),
     FieldSchemaType.FLOAT: NumericConverter(FieldSchemaType.FLOAT, float),
     FieldSchemaType.STRING: StringConverter(FieldSchemaType.STRING, six.text_type),
