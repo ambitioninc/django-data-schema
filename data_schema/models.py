@@ -149,7 +149,7 @@ class FieldSchema(models.Model):
     class Meta:
         unique_together = ('data_schema', 'field_key')
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{0} - {1} - {2}'.format(self.id, self.field_key, self.display_name)
 
     # The data schema to which this field belongs

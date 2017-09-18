@@ -8,4 +8,4 @@ class FieldSchemaTest(TestCase):
     def test_unicode(self):
         field = FieldSchema(field_key='key', display_name='Field', id=10)
 
-        self.assertEqual(unicode(field), u'10 - key - Field')
+        self.assertEqual(str(field), u'10 - key - Field')
