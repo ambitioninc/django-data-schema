@@ -24,7 +24,7 @@ class DataSchema(models.Model):
     """
     # The content type of the django model for which this schema is related. If None, this schema is
     # for a dictionary of data.
-    model_content_type = models.ForeignKey(ContentType, null=True, default=None)
+    model_content_type = models.ForeignKey(ContentType, null=True, default=None, on_delete=models.CASCADE)
 
     # A custom model manager that caches objects
     objects = DataSchemaManager()
@@ -153,7 +153,7 @@ class FieldSchema(models.Model):
         return u'{0} - {1} - {2}'.format(self.id, self.field_key, self.display_name)
 
     # The data schema to which this field belongs
-    data_schema = models.ForeignKey(DataSchema)
+    data_schema = models.ForeignKey(DataSchema, on_delete=models.CASCADE)
 
     # The key for the field in the data
     field_key = models.CharField(max_length=64)
@@ -234,7 +234,7 @@ class FieldOption(models.Model):
     """
     Specifies a set of possible values that a field schema can have
     """
-    field_schema = models.ForeignKey(FieldSchema)
+    field_schema = models.ForeignKey(FieldSchema, on_delete=models.CASCADE)
     value = models.CharField(max_length=1024)
 
     class Meta:

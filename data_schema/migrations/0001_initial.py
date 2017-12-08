@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -15,7 +16,7 @@ class Migration(migrations.Migration):
             name='DataSchema',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('model_content_type', models.ForeignKey(default=None, to='contenttypes.ContentType', null=True)),
+                ('model_content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, default=None, to='contenttypes.ContentType', null=True)),
             ],
             options={
             },
@@ -43,7 +44,7 @@ class Migration(migrations.Migration):
                 ('default_value', models.CharField(default=None, max_length=128, null=True, blank=True)),
                 ('field_type', models.CharField(choices=[('BOOLEAN', 'BOOLEAN'), ('DATE', 'DATE'), ('DATETIME', 'DATETIME'), ('FLOAT', 'FLOAT'), ('INT', 'INT'), ('STRING', 'STRING')], max_length=32)),
                 ('has_options', models.BooleanField(default=False)),
-                ('data_schema', models.ForeignKey(to='data_schema.DataSchema')),
+                ('data_schema', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data_schema.DataSchema')),
             ],
             options={
             },
@@ -56,7 +57,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='fieldoption',
             name='field_schema',
-            field=models.ForeignKey(to='data_schema.FieldSchema'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data_schema.FieldSchema'),
             preserve_default=True,
         ),
     ]
