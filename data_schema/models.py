@@ -156,7 +156,7 @@ class FieldSchema(models.Model):
     data_schema = models.ForeignKey(DataSchema, on_delete=models.CASCADE)
 
     # The key for the field in the data
-    field_key = models.CharField(max_length=64)
+    field_key = models.CharField(max_length=255)
 
     # Optional way to display the field. defaults to the field_key
     display_name = models.CharField(max_length=64, blank=True, default='')
