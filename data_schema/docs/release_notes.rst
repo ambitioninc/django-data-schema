@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+v1.0.1
+------
+* Lengthened size of field key
+
 v1.0.0
 ------
 * Remove python 2.7 support
