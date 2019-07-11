@@ -802,7 +802,7 @@ class StringFieldSchemaTest(TestCase):
         """
         Tests returning a string that matches a format.
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='^[\d\.]+$')
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format=r'^[\d\.]+$')
         val = field_schema.get_value({'val': '23.45'})
         self.assertEquals(val, '23.45')
 
@@ -810,7 +810,7 @@ class StringFieldSchemaTest(TestCase):
         """
         Tests returning a string that matches a format.
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='^[\d\.]+$')
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format=r'^[\d\.]+$')
         val = field_schema.get_value({'val': '23,45'})
         self.assertEquals(val, None)
 
@@ -818,7 +818,7 @@ class StringFieldSchemaTest(TestCase):
         """
         Tests returning a string that matches a format of a limited length number.
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='^[\d]{1,5}$')
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format=r'^[\d]{1,5}$')
         val = field_schema.get_value({'val': '2345'})
         self.assertEquals(val, '2345')
         val = field_schema.get_value({'val': '23456'})
@@ -828,7 +828,7 @@ class StringFieldSchemaTest(TestCase):
         """
         Tests returning a string that matches a format of a limited length number.
         """
-        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format='^[\d]{1,5}$')
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format=r'^[\d]{1,5}$')
         val = field_schema.get_value({'val': '234567'})
         self.assertEquals(val, None)
 
