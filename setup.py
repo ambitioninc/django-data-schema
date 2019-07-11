@@ -42,9 +42,9 @@ setup(
     ],
     license='MIT',
     install_requires=[
-        'Django>=1.11',
-        'django-manager-utils>=1.1.1',
-        'fleming>=0.4.6',
+        'Django>=2.0',
+        'django-manager-utils>=1.4.0',
+        'fleming>=0.5.0',
         'python-dateutil>=2.2',
     ],
     tests_require=[
