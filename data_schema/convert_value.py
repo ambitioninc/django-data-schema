@@ -55,13 +55,7 @@ class ValueConverter(object):
         """
         Converts the value into the format of the field schema type.
         """
-        try:
-            return self._python_type(value)
-        except Exception as e:
-            # Attach additional information to the exception to make higher level error handling easier
-            e.bad_value = value
-            e.expected_type = self._field_schema_type
-            raise e
+        return self._python_type(value)
 
     def __call__(self, value, format_str, default_value, transform_case=None):
         """
@@ -72,8 +66,14 @@ class ValueConverter(object):
         # Set the value to the default if it is None and there is a default
         value = default_value if value is None and default_value is not None else value
 
-        # Convert the value if it isn't None
-        return self._convert_value(value, format_str) if value is not None else None
+        try:
+            # Convert the value if it isn't None
+            return self._convert_value(value, format_str) if value is not None else None
+        except Exception as e:
+            # Attach additional information to the exception to make higher level error handling easier
+            e.bad_value = value
+            e.expected_type = self._field_schema_type
+            raise e
 
 
 class BooleanConverter(ValueConverter):
@@ -107,6 +107,14 @@ class NumericConverter(ValueConverter):
             value = self.NON_NUMERIC_REGEX.sub('', value) or None
 
         return value
+
+    def _convert_value(self, value, format_str):
+        converted_value = super()._convert_value(value, format_str)
+
+        if converted_value in [float('inf'), float('-inf')]:
+            raise ValueError('inf not a valid value for numeric data')
+
+        return converted_value
 
 
 class DurationConverter(ValueConverter):
