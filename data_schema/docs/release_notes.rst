@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+v1.3.0
+------
+* INF, -INF no longer allowed as numeric field values
+
 v1.2.0
 ------
 * Python 3.7
