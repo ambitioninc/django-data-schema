@@ -42,7 +42,7 @@ setup(
     ],
     license='MIT',
     install_requires=[
-        'Django>=2.0,<=3.2',
+        'Django>=2.0,<4.0',
         'django-manager-utils>=1.4.0',
         'fleming>=0.5.0',
         'python-dateutil>=2.2',
