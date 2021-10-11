@@ -3,7 +3,7 @@ Release Notes
 
 v1.3.1
 ------
-* Raise InvalidDateFormatException when trying to parse a timestamp that is too large
+* Raise InvalidDateFormatException when trying to parse a timestamp that is too large.
 
 v1.3.0
 ------
