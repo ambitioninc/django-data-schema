@@ -1,6 +1,10 @@
 Release Notes
 =============
 
+v1.2.1
+------
+* Raise InvalidDateFormatException when trying to parse a timestamp that is too large
+
 v1.2.0
 ------
 * Python 3.7
