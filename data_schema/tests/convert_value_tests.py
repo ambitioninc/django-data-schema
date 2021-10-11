@@ -4,6 +4,7 @@ from django.test import SimpleTestCase
 
 from data_schema.models import FieldSchemaType
 from data_schema.convert_value import convert_value
+from data_schema.exceptions import InvalidDateFormatException
 
 
 class ConvertValueExceptionTest(SimpleTestCase):
