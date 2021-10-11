@@ -50,4 +50,5 @@ def configure_settings():
             ROOT_URLCONF='data_schema.urls',
             DEBUG=False,
             DDF_FILL_NULLABLE_FIELDS=False,
+            SECRET_KEY='foo',
         )

@@ -1,9 +1,13 @@
 Release Notes
-=============
 
-v1.2.1
+
+v1.3.1
 ------
 * Raise InvalidDateFormatException when trying to parse a timestamp that is too large
+
+v1.3.0
+------
+* INF, -INF no longer allowed as numeric field values
 
 v1.2.0
 ------

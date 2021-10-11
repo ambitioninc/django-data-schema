@@ -1,5 +1,6 @@
 from copy import copy
 from datetime import datetime
+from functools import partial
 
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
@@ -922,6 +923,14 @@ class FloatFieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': '1.1e2'})
         self.assertEquals(val, 110)
+
+    def test_inf_invalid(self):
+        """
+        Verifies that an inf or -inf value will raise a value error
+        """
+        field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
+        self.assertRaises(ValueError, partial(field_schema.get_value, {'val': '5e9099'}))  # results in inf
+        self.assertRaises(ValueError, partial(field_schema.get_value, {'val': '-5e9099'}))  # results in -inf
 
     def test_negative_scientific_notation(self):
         """
