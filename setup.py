@@ -48,6 +48,7 @@ setup(
         'python-dateutil>=2.2',
     ],
     tests_require=[
+        'Django<4.0',
         'django-dynamic-fixture',
         'psycopg2',
         'django-nose',
