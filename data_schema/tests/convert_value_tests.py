@@ -127,5 +127,7 @@ class DateFlooredConverterTest(SimpleTestCase):
         """
         Verifies that InvalidDateFormatException is raised instead of a generic attribute error
         """
-        with self.assertRaises(InvalidDateFormatException):
+        with self.assertRaises(InvalidDateFormatException) as e:
             convert_value(FieldSchemaType.DATE_FLOORED, 3333333333333333333333333)
+
+        self.assertEqual(str(e), 'Invalid date format: 3333333333333333333333333')

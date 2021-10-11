@@ -157,7 +157,7 @@ class DatetimeConverter(ValueConverter):
         # It is assumed that value is a datetime here. If it isn't a datetime, then it is a bad value like
         # a number that is too large to be parsed as an integer
         if type(value) != datetime:
-            raise InvalidDateFormatException('Invalid date format')
+            raise InvalidDateFormatException(f'Invalid date format: {value}')
 
         # Convert any aware datetime objects to naive utc
         return value if value.tzinfo is None else fleming.convert_to_tz(value, pytz.utc, return_naive=True)
