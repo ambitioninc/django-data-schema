@@ -1,9 +1,11 @@
 Release Notes
 
 
-v1.3.1
+v1.4.0
 ------
 * Raise InvalidDateFormatException when trying to parse a timestamp that is too large.
+* remove django 2.0
+* remove django 2.1
 
 v1.3.0
 ------
