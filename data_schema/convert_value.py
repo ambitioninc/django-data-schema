@@ -10,6 +10,7 @@ import fleming
 import pytz
 
 from data_schema.field_schema_type import FieldSchemaType, FieldSchemaCase
+from data_schema.exceptions import InvalidDateFormatException
 
 
 class ValueConverter(object):
