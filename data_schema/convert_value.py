@@ -10,6 +10,7 @@ import fleming
 import pytz
 
 from data_schema.field_schema_type import FieldSchemaType, FieldSchemaCase
+from data_schema.exceptions import InvalidDateFormatException
 
 
 class ValueConverter(object):
@@ -153,6 +154,11 @@ class DatetimeConverter(ValueConverter):
             pass
         if self.is_string(value):
             value = datetime.strptime(value, format_str) if format_str else parse(value)
+
+        # It is assumed that value is a datetime here. If it isn't a datetime, then it is a bad value like
+        # a number that is too large to be parsed as an integer
+        if type(value) != datetime:
+            raise InvalidDateFormatException(f'Invalid date format: {value}')
 
         # Convert any aware datetime objects to naive utc
         return value if value.tzinfo is None else fleming.convert_to_tz(value, pytz.utc, return_naive=True)

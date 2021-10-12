@@ -4,6 +4,7 @@ from django.test import SimpleTestCase
 
 from data_schema.models import FieldSchemaType
 from data_schema.convert_value import convert_value
+from data_schema.exceptions import InvalidDateFormatException
 
 
 class ConvertValueExceptionTest(SimpleTestCase):
@@ -122,3 +123,12 @@ class DateFlooredConverterTest(SimpleTestCase):
         self.assertEqual(datetime(2017, 3, 1, 0), convert_value(FieldSchemaType.DATE_FLOORED, '2017-03-01T10:30.000Z'))
         self.assertEqual(datetime(2017, 3, 1, 0), convert_value(FieldSchemaType.DATE_FLOORED, '2017-03-01 10:30.00'))
         self.assertEqual(datetime(2017, 3, 1, 0), convert_value(FieldSchemaType.DATE_FLOORED, '2017-03-01'))
+
+    def test_convert_too_large_integer(self):
+        """
+        Verifies that InvalidDateFormatException is raised instead of a generic attribute error
+        """
+        with self.assertRaises(InvalidDateFormatException) as context:
+            convert_value(FieldSchemaType.DATE_FLOORED, 3333333333333333333333333)
+
+        self.assertEqual(str(context.exception), 'Invalid date format: 3333333333333333333333333')
