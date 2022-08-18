@@ -12,6 +12,9 @@ class FieldSchemaTest(TestCase):
         self.assertEqual(str(field), u'10 - key - Field')
 
     def test_display_name_no_character_limit(self):
+        """
+        Test to ensure that we are no longer running into the 64 character limit for display_name on the FieldSchema
+        """
         data_schema = G(DataSchema)
         field_schema = FieldSchema(
             data_schema=data_schema,
