@@ -1,6 +1,6 @@
 Release Notes
 
-v1.4.1
+v1.5.0
 ------
 * Update display_name field on FieldSchema to no longer have a char limit.
 
