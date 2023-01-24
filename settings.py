@@ -25,7 +25,7 @@ def configure_settings():
                 'NAME': 'data_schema',
                 'USER': 'postgres',
                 'PASSWORD': '',
-                'HOST': 'db',   
+                'HOST': 'db',
             }
         else:
             raise RuntimeError('Unsupported test DB {0}'.format(test_db))
