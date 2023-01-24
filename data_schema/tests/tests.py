@@ -368,7 +368,7 @@ class DataSchemaTest(TestCase):
         data_schema.set_value(val, 'field_key', 'value')
         self.assertEquals(val['field_key'], 'value')
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_dict(self, convert_value_mock):
         """
         Tests getting the value of a field when the object is a dictionary.
@@ -395,7 +395,7 @@ class DataSchemaTest(TestCase):
         value = data_schema.get_value(obj, 'field_key')
         self.assertEquals(value, 'none')
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_obj(self, convert_value_mock):
         """
         Tests the get_value function with an object as input.
@@ -410,7 +410,7 @@ class DataSchemaTest(TestCase):
         data_schema.get_value(Input(), 'field_key')
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None, None)
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_list(self, convert_value_mock):
         """
         Tests the get_value function with a list as input.
@@ -456,7 +456,7 @@ class FieldSchemaTest(TestCase):
         field_schema.set_value(val, 'value')
         self.assertEquals(val['field_key'], 'value')
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_dict(self, convert_value_mock):
         """
         Tests getting the value of a field when the object is a dictionary.
@@ -465,7 +465,7 @@ class FieldSchemaTest(TestCase):
         field_schema.get_value({'field_key': 'hello'})
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'hello', None, None, None)
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_obj(self, convert_value_mock):
         """
         Tests the get_value function with an object as input.
@@ -477,7 +477,7 @@ class FieldSchemaTest(TestCase):
         field_schema.get_value(Input())
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'value', 'format', None, None)
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_list(self, convert_value_mock):
         """
         Tests the get_value function with a list as input.
@@ -486,7 +486,7 @@ class FieldSchemaTest(TestCase):
         field_schema.get_value(['hello', 'world'])
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, 'world', None, None, None)
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_dict_non_extant(self, convert_value_mock):
         """
         Tests getting the value of a field when the object is a dictionary and it doesn't exist in the dict.
@@ -495,7 +495,7 @@ class FieldSchemaTest(TestCase):
         field_schema.get_value({'field_key': 'hello'})
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None, None)
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_obj_non_extant(self, convert_value_mock):
         """
         Tests the get_value function with an object as input and the field key is not in the object.
@@ -508,7 +508,7 @@ class FieldSchemaTest(TestCase):
         field_schema.get_value(Input())
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, 'format', None, None)
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_list_non_extant_negative(self, convert_value_mock):
         """
         Tests the get_value function with a list as input and the input position is negative.
@@ -517,7 +517,7 @@ class FieldSchemaTest(TestCase):
         field_schema.get_value(['hello', 'world'])
         convert_value_mock.assert_called_once_with(FieldSchemaType.STRING, None, None, None, None)
 
-    @patch('data_schema.models.convert_value', set_spec=True)
+    @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_list_non_extant_out_of_range(self, convert_value_mock):
         """
         Tests the get_value function with a list as input and the input position is greater than the

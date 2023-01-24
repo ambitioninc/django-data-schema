@@ -159,7 +159,7 @@ class FieldSchema(models.Model):
     field_key = models.CharField(max_length=255)
 
     # Optional way to display the field. defaults to the field_key
-    display_name = models.CharField(max_length=64, blank=True, default='')
+    display_name = models.TextField(blank=True, default='')
 
     # The order in which this field appears in the UID for the record. It is null if it does
     # not appear in the uniqueness constraint
