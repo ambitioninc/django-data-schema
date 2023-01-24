@@ -14,7 +14,7 @@ def configure_settings():
         if test_db is None:
             db_config = {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'db_mutex',
+                'NAME': 'data_schema',
                 'USER': 'postgres',
                 'PASSWORD': '',
                 'HOST': 'db',
@@ -22,10 +22,10 @@ def configure_settings():
         elif test_db == 'postgres':
             db_config = {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'db_mutex',
+                'NAME': 'data_schema',
                 'USER': 'postgres',
                 'PASSWORD': '',
-                'HOST': 'db',
+                'HOST': 'db',   
             }
         else:
             raise RuntimeError('Unsupported test DB {0}'.format(test_db))
