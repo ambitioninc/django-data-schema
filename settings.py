@@ -36,7 +36,6 @@ def configure_settings():
 
         settings.configure(
             TEST_RUNNER='django_nose.NoseTestSuiteRunner',
-            SECRET_KEY='*',
             NOSE_ARGS=['--nocapture', '--nologcapture', '--verbosity=1'],
             DATABASES={
                 'default': db_config,
