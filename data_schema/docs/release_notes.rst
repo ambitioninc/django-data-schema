@@ -1,5 +1,11 @@
 Release Notes
 
+v2.0.0
+------
+* drop python 3.6
+* python 3.8, 3.9
+* django 3.0, 3.1, 3.2, 4.0, 4.1
+
 v1.5.0
 ------
 * Update display_name field on FieldSchema to no longer have a char limit.
