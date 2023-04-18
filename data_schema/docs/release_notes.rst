@@ -1,5 +1,9 @@
 Release Notes
 
+v2.0.1
+------
+* Add blank=True to null model fields
+
 v2.0.0
 ------
 * drop python 3.6

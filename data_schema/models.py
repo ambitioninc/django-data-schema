@@ -24,7 +24,7 @@ class DataSchema(models.Model):
     """
     # The content type of the django model for which this schema is related. If None, this schema is
     # for a dictionary of data.
-    model_content_type = models.ForeignKey(ContentType, null=True, default=None, on_delete=models.CASCADE)
+    model_content_type = models.ForeignKey(ContentType, null=True, blank=True, default=None, on_delete=models.CASCADE)
 
     # A custom model manager that caches objects
     objects = DataSchemaManager()
@@ -163,11 +163,11 @@ class FieldSchema(models.Model):
 
     # The order in which this field appears in the UID for the record. It is null if it does
     # not appear in the uniqueness constraint
-    uniqueness_order = models.IntegerField(null=True)
+    uniqueness_order = models.IntegerField(null=True, blank=True)
 
     # The position of the field. This ordering is relevant when parsing a list of fields into
     # a dictionary with the field names as keys
-    field_position = models.IntegerField(null=True)
+    field_position = models.IntegerField(null=True, blank=True)
 
     # The type of field. The available choices are present in the FieldSchemaType class
     field_type = models.CharField(max_length=32, choices=FieldSchemaType.choices())
