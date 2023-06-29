@@ -51,4 +51,5 @@ def configure_settings():
             DEBUG=False,
             DDF_FILL_NULLABLE_FIELDS=False,
             SECRET_KEY='foo',
+            DEFAULT_AUTO_FIELD='django.db.models.AutoField',
         )
