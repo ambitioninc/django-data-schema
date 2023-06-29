@@ -5,7 +5,7 @@ from functools import partial
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django_dynamic_fixture import G
-from mock import patch
+from unittest.mock import patch
 import pytz
 
 from data_schema.models import DataSchema, FieldSchema, FieldOption
