@@ -36,7 +36,7 @@ class FieldSchemaTypeTest(TestCase):
             ('BOOLEAN', 'BOOLEAN'),
             ('DURATION', 'DURATION'),
         ])
-        self.assertEquals(expected_choices, set(FieldSchemaType.choices()))
+        self.assertEqual(expected_choices, set(FieldSchemaType.choices()))
 
     def test_alphabetical(self):
         choices = FieldSchemaType.choices()
@@ -64,18 +64,18 @@ class DataSchemaUpdateTest(TestCase):
     def test_update_with_model_ctype_not_none(self):
         ds = DataSchema()
         ds.update(model_content_type=ContentType.objects.get_for_model(ds))
-        self.assertEquals(ds.model_content_type, ContentType.objects.get_for_model(ds))
+        self.assertEqual(ds.model_content_type, ContentType.objects.get_for_model(ds))
 
     def test_empty_field_schema_set(self):
         ds = DataSchema()
         ds.update(fieldschema_set=[])
-        self.assertEquals(FieldSchema.objects.count(), 0)
+        self.assertEqual(FieldSchema.objects.count(), 0)
 
     def test_empty_field_schema_set_with_preexisting(self):
         ds = G(DataSchema)
         G(FieldSchema, data_schema=ds)
         ds.update(fieldschema_set=[])
-        self.assertEquals(FieldSchema.objects.count(), 0)
+        self.assertEqual(FieldSchema.objects.count(), 0)
 
     def test_field_schema_set_creation_with_basic_values(self):
         ds = DataSchema()
@@ -84,8 +84,8 @@ class DataSchemaUpdateTest(TestCase):
             'field_type': 'STRING'
         }])
         fs = ds.fieldschema_set.get()
-        self.assertEquals(fs.field_key, 'email')
-        self.assertEquals(fs.field_type, 'STRING')
+        self.assertEqual(fs.field_key, 'email')
+        self.assertEqual(fs.field_type, 'STRING')
 
     def test_field_schema_set_preexisting_values(self):
         ds = G(DataSchema)
@@ -111,28 +111,28 @@ class DataSchemaUpdateTest(TestCase):
             'default_value': 'default',
         }])
 
-        self.assertEquals(FieldSchema.objects.count(), 2)
+        self.assertEqual(FieldSchema.objects.count(), 2)
         fs = ds.fieldschema_set.all().order_by('field_key')[0]
-        self.assertEquals(fs.field_key, 'date')
-        self.assertEquals(fs.field_type, 'DATETIME')
-        self.assertEquals(fs.display_name, 'Date')
-        self.assertEquals(fs.uniqueness_order, 2)
-        self.assertEquals(fs.field_position, 2)
-        self.assertEquals(fs.field_format, 'format2')
-        self.assertEquals(fs.default_value, 'default')
+        self.assertEqual(fs.field_key, 'date')
+        self.assertEqual(fs.field_type, 'DATETIME')
+        self.assertEqual(fs.display_name, 'Date')
+        self.assertEqual(fs.uniqueness_order, 2)
+        self.assertEqual(fs.field_position, 2)
+        self.assertEqual(fs.field_format, 'format2')
+        self.assertEqual(fs.default_value, 'default')
         self.assertFalse(fs.has_options)
         self.assertIsNone(fs.transform_case)
 
         fs = ds.fieldschema_set.all().order_by('field_key')[1]
-        self.assertEquals(fs.field_key, 'email')
-        self.assertEquals(fs.field_type, 'STRING')
-        self.assertEquals(fs.display_name, 'Email')
-        self.assertEquals(fs.uniqueness_order, 1)
-        self.assertEquals(fs.field_position, 1)
-        self.assertEquals(fs.field_format, 'format')
-        self.assertEquals(fs.default_value, '')
+        self.assertEqual(fs.field_key, 'email')
+        self.assertEqual(fs.field_type, 'STRING')
+        self.assertEqual(fs.display_name, 'Email')
+        self.assertEqual(fs.uniqueness_order, 1)
+        self.assertEqual(fs.field_position, 1)
+        self.assertEqual(fs.field_format, 'format')
+        self.assertEqual(fs.default_value, '')
         self.assertFalse(fs.has_options)
-        self.assertEquals(fs.transform_case, FieldSchemaCase.LOWER)
+        self.assertEqual(fs.transform_case, FieldSchemaCase.LOWER)
 
     def test_field_schema_set_preexisting_values_w_options(self):
         ds = G(DataSchema)
@@ -159,28 +159,28 @@ class DataSchemaUpdateTest(TestCase):
             'fieldoption_set': ['option3', 'option4'],
         }])
 
-        self.assertEquals(FieldSchema.objects.count(), 2)
+        self.assertEqual(FieldSchema.objects.count(), 2)
         fs = ds.fieldschema_set.all().order_by('field_key')[0]
-        self.assertEquals(fs.field_key, 'date')
-        self.assertEquals(fs.field_type, 'DATETIME')
-        self.assertEquals(fs.display_name, 'Date')
-        self.assertEquals(fs.uniqueness_order, 2)
-        self.assertEquals(fs.field_position, 2)
-        self.assertEquals(fs.field_format, 'format2')
-        self.assertEquals(fs.default_value, 'default')
+        self.assertEqual(fs.field_key, 'date')
+        self.assertEqual(fs.field_type, 'DATETIME')
+        self.assertEqual(fs.display_name, 'Date')
+        self.assertEqual(fs.uniqueness_order, 2)
+        self.assertEqual(fs.field_position, 2)
+        self.assertEqual(fs.field_format, 'format2')
+        self.assertEqual(fs.default_value, 'default')
         self.assertTrue(fs.has_options)
-        self.assertEquals(set(['option3', 'option4']), set(fs.fieldoption_set.values_list('value', flat=True)))
+        self.assertEqual(set(['option3', 'option4']), set(fs.fieldoption_set.values_list('value', flat=True)))
 
         fs = ds.fieldschema_set.all().order_by('field_key')[1]
-        self.assertEquals(fs.field_key, 'email')
-        self.assertEquals(fs.field_type, 'STRING')
-        self.assertEquals(fs.display_name, 'Email')
-        self.assertEquals(fs.uniqueness_order, 1)
-        self.assertEquals(fs.field_position, 1)
-        self.assertEquals(fs.field_format, 'format')
-        self.assertEquals(fs.default_value, '')
+        self.assertEqual(fs.field_key, 'email')
+        self.assertEqual(fs.field_type, 'STRING')
+        self.assertEqual(fs.display_name, 'Email')
+        self.assertEqual(fs.uniqueness_order, 1)
+        self.assertEqual(fs.field_position, 1)
+        self.assertEqual(fs.field_format, 'format')
+        self.assertEqual(fs.default_value, '')
         self.assertTrue(fs.has_options)
-        self.assertEquals(set(['option1', 'option2']), set(fs.fieldoption_set.values_list('value', flat=True)))
+        self.assertEqual(set(['option1', 'option2']), set(fs.fieldoption_set.values_list('value', flat=True)))
 
 
 class DataSchemaTest(TestCase):
@@ -201,16 +201,16 @@ class DataSchemaTest(TestCase):
         with self.assertRaises(ValueError) as ctx:
             data_schema.get_value({field_key: bad_value}, field_key)
 
-        self.assertEquals(field_key, ctx.exception.field_key)
-        self.assertEquals(bad_value, ctx.exception.bad_value)
-        self.assertEquals(FieldSchemaType.INT, ctx.exception.expected_type)
+        self.assertEqual(field_key, ctx.exception.field_key)
+        self.assertEqual(bad_value, ctx.exception.bad_value)
+        self.assertEqual(FieldSchemaType.INT, ctx.exception.expected_type)
 
     def test_get_unique_fields_no_fields(self):
         """
         Tests the get_unique_fields function when there are no fields defined.
         """
         data_schema = G(DataSchema)
-        self.assertEquals(data_schema.get_unique_fields(), [])
+        self.assertEqual(data_schema.get_unique_fields(), [])
 
     def test_get_unique_fields_no_unique_fields(self):
         """
@@ -221,7 +221,7 @@ class DataSchemaTest(TestCase):
         G(FieldSchema, data_schema=data_schema)
         G(FieldSchema, data_schema=data_schema)
 
-        self.assertEquals(data_schema.get_unique_fields(), [])
+        self.assertEqual(data_schema.get_unique_fields(), [])
 
     def test_get_unique_fields_one(self):
         """
@@ -231,7 +231,7 @@ class DataSchemaTest(TestCase):
         field = G(FieldSchema, data_schema=data_schema, uniqueness_order=1)
         G(FieldSchema, data_schema=data_schema)
 
-        self.assertEquals(data_schema.get_unique_fields(), [field])
+        self.assertEqual(data_schema.get_unique_fields(), [field])
 
     def test_get_unique_fields_three(self):
         """
@@ -243,7 +243,7 @@ class DataSchemaTest(TestCase):
         field3 = G(FieldSchema, data_schema=data_schema, uniqueness_order=2)
         G(FieldSchema, data_schema=data_schema)
 
-        self.assertEquals(data_schema.get_unique_fields(), [field1, field3, field2])
+        self.assertEqual(data_schema.get_unique_fields(), [field1, field3, field2])
 
     def test_optimal_queries_get_unique_fields(self):
         """
@@ -259,7 +259,7 @@ class DataSchemaTest(TestCase):
         data_schema = DataSchema.objects.get(id=data_schema.id)
 
         with self.assertNumQueries(0):
-            self.assertEquals(data_schema.get_unique_fields(), [field1, field3, field2])
+            self.assertEqual(data_schema.get_unique_fields(), [field1, field3, field2])
 
     def test_cached_unique_fields(self):
         """
@@ -274,16 +274,16 @@ class DataSchemaTest(TestCase):
         data_schema = DataSchema.objects.get(id=data_schema.id)
 
         self.assertFalse(hasattr(data_schema, '_unique_fields'))
-        self.assertEquals(data_schema.get_unique_fields(), [field1, field3, field2])
+        self.assertEqual(data_schema.get_unique_fields(), [field1, field3, field2])
         self.assertTrue(hasattr(data_schema, '_unique_fields'))
-        self.assertEquals(data_schema.get_unique_fields(), [field1, field3, field2])
+        self.assertEqual(data_schema.get_unique_fields(), [field1, field3, field2])
 
     def test_get_fields_no_fields(self):
         """
         Tests the get_fields function when there are no fields defined.
         """
         data_schema = G(DataSchema)
-        self.assertEquals(data_schema.get_fields(), [])
+        self.assertEqual(data_schema.get_fields(), [])
 
     def test_get_fields_one(self):
         """
@@ -293,7 +293,7 @@ class DataSchemaTest(TestCase):
         field = G(FieldSchema, data_schema=data_schema)
         G(FieldSchema)
 
-        self.assertEquals(data_schema.get_fields(), [field])
+        self.assertEqual(data_schema.get_fields(), [field])
 
     def test_get_fields_three(self):
         """
@@ -305,7 +305,7 @@ class DataSchemaTest(TestCase):
         field3 = G(FieldSchema, data_schema=data_schema, uniqueness_order=1)
         G(FieldSchema)
 
-        self.assertEquals(set(data_schema.get_fields()), set([field1, field2, field3]))
+        self.assertEqual(set(data_schema.get_fields()), set([field1, field2, field3]))
 
     def test_get_fields_with_field_ordering(self):
         """
@@ -318,7 +318,7 @@ class DataSchemaTest(TestCase):
         field3 = G(FieldSchema, data_schema=data_schema, field_position=1)
         G(FieldSchema)
 
-        self.assertEquals(data_schema.get_fields(), [field3, field1, field2])
+        self.assertEqual(data_schema.get_fields(), [field3, field1, field2])
 
     def test_optimal_queries_get_fields(self):
         """
@@ -334,7 +334,7 @@ class DataSchemaTest(TestCase):
         data_schema = DataSchema.objects.get(id=data_schema.id)
 
         with self.assertNumQueries(0):
-            self.assertEquals(set(data_schema.get_fields()), set([field1, field3, field2]))
+            self.assertEqual(set(data_schema.get_fields()), set([field1, field3, field2]))
 
     def test_set_value_list(self):
         """
@@ -344,7 +344,7 @@ class DataSchemaTest(TestCase):
         G(FieldSchema, data_schema=data_schema, field_key='field_key', field_position=1)
         val = ['hello', 'worlds']
         data_schema.set_value(val, 'field_key', 'world')
-        self.assertEquals(val, ['hello', 'world'])
+        self.assertEqual(val, ['hello', 'world'])
 
     def test_set_value_obj(self):
         """
@@ -356,7 +356,7 @@ class DataSchemaTest(TestCase):
         G(FieldSchema, data_schema=data_schema, field_key='field_key')
         obj = Input()
         data_schema.set_value(obj, 'field_key', 'value')
-        self.assertEquals(obj.field_key, 'value')
+        self.assertEqual(obj.field_key, 'value')
 
     def test_set_value_dict(self):
         """
@@ -366,7 +366,7 @@ class DataSchemaTest(TestCase):
         G(FieldSchema, data_schema=data_schema, field_key='field_key')
         val = {'field_key': 'value1'}
         data_schema.set_value(val, 'field_key', 'value')
-        self.assertEquals(val['field_key'], 'value')
+        self.assertEqual(val['field_key'], 'value')
 
     @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_dict(self, convert_value_mock):
@@ -391,9 +391,9 @@ class DataSchemaTest(TestCase):
             'field_key': 'none',
         }
         value = data_schema.get_value(obj, 'field_key')
-        self.assertEquals(value, 'none')
+        self.assertEqual(value, 'none')
         value = data_schema.get_value(obj, 'field_key')
-        self.assertEquals(value, 'none')
+        self.assertEqual(value, 'none')
 
     @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_obj(self, convert_value_mock):
@@ -434,7 +434,7 @@ class FieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='field_key', field_position=1)
         val = ['hello', 'worlds']
         field_schema.set_value(val, 'world')
-        self.assertEquals(val, ['hello', 'world'])
+        self.assertEqual(val, ['hello', 'world'])
 
     def test_set_value_obj(self):
         """
@@ -445,7 +445,7 @@ class FieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='field_key')
         obj = Input()
         field_schema.set_value(obj, 'value')
-        self.assertEquals(obj.field_key, 'value')
+        self.assertEqual(obj.field_key, 'value')
 
     def test_set_value_dict(self):
         """
@@ -454,7 +454,7 @@ class FieldSchemaTest(TestCase):
         field_schema = G(FieldSchema, field_key='field_key')
         val = {'field_key': 'value1'}
         field_schema.set_value(val, 'value')
-        self.assertEquals(val['field_key'], 'value')
+        self.assertEqual(val['field_key'], 'value')
 
     @patch('data_schema.models.convert_value', spec_set=True)
     def test_get_value_dict(self, convert_value_mock):
@@ -554,7 +554,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
         val = field_schema.get_value({'time': '2013/04/02 9:25 PM'})
-        self.assertEquals(val, datetime(2013, 4, 2, 21, 25))
+        self.assertEqual(val, datetime(2013, 4, 2, 21, 25))
 
     def test_none(self):
         """
@@ -562,7 +562,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
         val = field_schema.get_value({'time': None})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_blank(self):
         """
@@ -570,7 +570,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
         val = field_schema.get_value({'time': '   '})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_padded_date_with_format(self):
         """
@@ -578,7 +578,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
         val = field_schema.get_value({'time': '    2013-04-05     '})
-        self.assertEquals(val, datetime(2013, 4, 5))
+        self.assertEqual(val, datetime(2013, 4, 5))
 
     def test_get_value_date(self):
         """
@@ -586,7 +586,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
         val = field_schema.get_value({'time': datetime(2013, 4, 4)})
-        self.assertEquals(val, datetime(2013, 4, 4))
+        self.assertEqual(val, datetime(2013, 4, 4))
 
     def test_get_value_int(self):
         """
@@ -594,7 +594,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
         val = field_schema.get_value({'time': 1399486805})
-        self.assertEquals(val, datetime(2014, 5, 7, 18, 20, 5))
+        self.assertEqual(val, datetime(2014, 5, 7, 18, 20, 5))
 
     def test_get_value_float(self):
         """
@@ -602,7 +602,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE)
         val = field_schema.get_value({'time': 1399486805.0})
-        self.assertEquals(val, datetime(2014, 5, 7, 18, 20, 5))
+        self.assertEqual(val, datetime(2014, 5, 7, 18, 20, 5))
 
     def test_get_value_formatted(self):
         """
@@ -610,7 +610,7 @@ class DateFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATE, field_format='%Y-%m-%d')
         val = field_schema.get_value({'time': '2013-04-05'})
-        self.assertEquals(val, datetime(2013, 4, 5))
+        self.assertEqual(val, datetime(2013, 4, 5))
 
 
 class DatetimeFieldSchemaTest(TestCase):
@@ -624,7 +624,7 @@ class DatetimeFieldSchemaTest(TestCase):
         field_schema = G(
             FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, default_value='2013/04/02 9:25 PM')
         val = field_schema.get_value({'time': ' '})
-        self.assertEquals(val, datetime(2013, 4, 2, 21, 25))
+        self.assertEqual(val, datetime(2013, 4, 2, 21, 25))
 
     def test_default_value_null(self):
         """
@@ -633,7 +633,7 @@ class DatetimeFieldSchemaTest(TestCase):
         field_schema = G(
             FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, default_value='2013/04/02 9:25 PM')
         val = field_schema.get_value({'time': None})
-        self.assertEquals(val, datetime(2013, 4, 2, 21, 25))
+        self.assertEqual(val, datetime(2013, 4, 2, 21, 25))
 
     def test_no_format_string(self):
         """
@@ -641,7 +641,7 @@ class DatetimeFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
         val = field_schema.get_value({'time': '2013/04/02 9:25 PM'})
-        self.assertEquals(val, datetime(2013, 4, 2, 21, 25))
+        self.assertEqual(val, datetime(2013, 4, 2, 21, 25))
 
     def test_datetime_with_tz_dateutil(self):
         """
@@ -649,7 +649,7 @@ class DatetimeFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
         val = field_schema.get_value({'time': '2013/04/02 09:25:00+0400'})
-        self.assertEquals(val, datetime(2013, 4, 2, 5, 25))
+        self.assertEqual(val, datetime(2013, 4, 2, 5, 25))
 
     def test_datetime_with_tz(self):
         """
@@ -657,7 +657,7 @@ class DatetimeFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
         val = field_schema.get_value({'time': datetime(2013, 4, 2, 9, 25, tzinfo=pytz.utc)})
-        self.assertEquals(val, datetime(2013, 4, 2, 9, 25))
+        self.assertEqual(val, datetime(2013, 4, 2, 9, 25))
 
     def test_none(self):
         """
@@ -665,7 +665,7 @@ class DatetimeFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, field_format='%Y-%m-%d')
         val = field_schema.get_value({'time': None})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_blank(self):
         """
@@ -673,7 +673,7 @@ class DatetimeFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, field_format='%Y-%m-%d')
         val = field_schema.get_value({'time': '   '})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_get_value_date(self):
         """
@@ -681,7 +681,7 @@ class DatetimeFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
         val = field_schema.get_value({'time': datetime(2013, 4, 4)})
-        self.assertEquals(val, datetime(2013, 4, 4))
+        self.assertEqual(val, datetime(2013, 4, 4))
 
     def test_get_value_int(self):
         """
@@ -689,7 +689,7 @@ class DatetimeFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
         val = field_schema.get_value({'time': 1399486805})
-        self.assertEquals(val, datetime(2014, 5, 7, 18, 20, 5))
+        self.assertEqual(val, datetime(2014, 5, 7, 18, 20, 5))
 
     def test_get_value_float(self):
         """
@@ -697,7 +697,7 @@ class DatetimeFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME)
         val = field_schema.get_value({'time': 1399486805.0})
-        self.assertEquals(val, datetime(2014, 5, 7, 18, 20, 5))
+        self.assertEqual(val, datetime(2014, 5, 7, 18, 20, 5))
 
     def test_get_value_formatted(self):
         """
@@ -706,7 +706,7 @@ class DatetimeFieldSchemaTest(TestCase):
         field_schema = G(
             FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, field_format='%Y-%m-%d %H:%M:%S')
         val = field_schema.get_value({'time': '2013-04-05 12:12:12'})
-        self.assertEquals(val, datetime(2013, 4, 5, 12, 12, 12))
+        self.assertEqual(val, datetime(2013, 4, 5, 12, 12, 12))
 
     def test_get_value_formatted_unicode(self):
         """
@@ -715,7 +715,7 @@ class DatetimeFieldSchemaTest(TestCase):
         field_schema = G(
             FieldSchema, field_key='time', field_type=FieldSchemaType.DATETIME, field_format='%Y-%m-%d %H:%M:%S')
         val = field_schema.get_value({'time': u'2013-04-05 12:12:12'})
-        self.assertEquals(val, datetime(2013, 4, 5, 12, 12, 12))
+        self.assertEqual(val, datetime(2013, 4, 5, 12, 12, 12))
 
 
 class IntFieldSchemaTest(TestCase):
@@ -728,7 +728,7 @@ class IntFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
         val = field_schema.get_value({'val': '-1'})
-        self.assertEquals(val, -1)
+        self.assertEqual(val, -1)
 
     def test_none(self):
         """
@@ -736,7 +736,7 @@ class IntFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
         val = field_schema.get_value({'val': None})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_blank(self):
         """
@@ -744,7 +744,7 @@ class IntFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
         val = field_schema.get_value({'val': '   '})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_get_value_non_numeric_str(self):
         """
@@ -752,7 +752,7 @@ class IntFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
         val = field_schema.get_value({'val': ' $15,000,456 Dollars '})
-        self.assertAlmostEquals(val, 15000456)
+        self.assertAlmostEqual(val, 15000456)
 
     def test_get_value_str(self):
         """
@@ -760,7 +760,7 @@ class IntFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
         val = field_schema.get_value({'val': '1'})
-        self.assertEquals(val, 1)
+        self.assertEqual(val, 1)
 
     def test_get_value_int(self):
         """
@@ -768,7 +768,7 @@ class IntFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
         val = field_schema.get_value({'val': 5})
-        self.assertEquals(val, 5)
+        self.assertEqual(val, 5)
 
     def test_get_value_float(self):
         """
@@ -776,7 +776,7 @@ class IntFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.INT)
         val = field_schema.get_value({'val': 5.2})
-        self.assertEquals(val, 5)
+        self.assertEqual(val, 5)
 
 
 class StringFieldSchemaTest(TestCase):
@@ -789,7 +789,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': u'\u2019'})
-        self.assertEquals(val, u'\u2019')
+        self.assertEqual(val, u'\u2019')
 
     def test_unicode_input(self):
         """
@@ -797,7 +797,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': u'    '})
-        self.assertEquals(val, '')
+        self.assertEqual(val, '')
 
     def test_matching_format(self):
         """
@@ -805,7 +805,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format=r'^[\d\.]+$')
         val = field_schema.get_value({'val': '23.45'})
-        self.assertEquals(val, '23.45')
+        self.assertEqual(val, '23.45')
 
     def test_non_matching_format(self):
         """
@@ -813,7 +813,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format=r'^[\d\.]+$')
         val = field_schema.get_value({'val': '23,45'})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_matching_format_limit_length(self):
         """
@@ -821,9 +821,9 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format=r'^[\d]{1,5}$')
         val = field_schema.get_value({'val': '2345'})
-        self.assertEquals(val, '2345')
+        self.assertEqual(val, '2345')
         val = field_schema.get_value({'val': '23456'})
-        self.assertEquals(val, '23456')
+        self.assertEqual(val, '23456')
 
     def test_non_matching_format_limit_length(self):
         """
@@ -831,7 +831,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, field_format=r'^[\d]{1,5}$')
         val = field_schema.get_value({'val': '234567'})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_none(self):
         """
@@ -839,7 +839,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': None})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_blank(self):
         """
@@ -848,7 +848,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': '    '})
-        self.assertEquals(val, '')
+        self.assertEqual(val, '')
 
     def test_strip_whitespaces(self):
         """
@@ -857,7 +857,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': '   1 2  3    '})
-        self.assertEquals(val, '1 2  3')
+        self.assertEqual(val, '1 2  3')
 
     def test_get_value_str(self):
         """
@@ -865,7 +865,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': '1'})
-        self.assertEquals(val, '1')
+        self.assertEqual(val, '1')
 
     def test_get_value_int(self):
         """
@@ -873,7 +873,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': 5})
-        self.assertEquals(val, '5')
+        self.assertEqual(val, '5')
 
     def test_get_value_float(self):
         """
@@ -881,7 +881,7 @@ class StringFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.STRING)
         val = field_schema.get_value({'val': 5.2})
-        self.assertEquals(val, '5.2')
+        self.assertEqual(val, '5.2')
 
     def test_lowercase(self):
         """
@@ -891,7 +891,7 @@ class StringFieldSchemaTest(TestCase):
             FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, transform_case=FieldSchemaCase.LOWER
         )
         val = field_schema.get_value({'val': 'Value'})
-        self.assertEquals(val, 'value')
+        self.assertEqual(val, 'value')
 
     def test_uppercase(self):
         """
@@ -901,7 +901,7 @@ class StringFieldSchemaTest(TestCase):
             FieldSchema, field_key='val', field_type=FieldSchemaType.STRING, transform_case=FieldSchemaCase.UPPER
         )
         val = field_schema.get_value({'val': 'Value'})
-        self.assertEquals(val, 'VALUE')
+        self.assertEqual(val, 'VALUE')
 
 
 class FloatFieldSchemaTest(TestCase):
@@ -914,7 +914,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': '1.1E2'})
-        self.assertEquals(val, 110)
+        self.assertEqual(val, 110)
 
     def test_positive_scientific_notation_small_e(self):
         """
@@ -922,7 +922,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': '1.1e2'})
-        self.assertEquals(val, 110)
+        self.assertEqual(val, 110)
 
     def test_inf_invalid(self):
         """
@@ -938,7 +938,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': '-1.1E-2'})
-        self.assertEquals(val, -0.011)
+        self.assertEqual(val, -0.011)
 
     def test_negative_string(self):
         """
@@ -946,7 +946,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': '-1.1'})
-        self.assertEquals(val, -1.1)
+        self.assertEqual(val, -1.1)
 
     def test_none(self):
         """
@@ -954,7 +954,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': None})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_blank(self):
         """
@@ -962,7 +962,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': '   '})
-        self.assertEquals(val, None)
+        self.assertEqual(val, None)
 
     def test_get_value_non_numeric_str(self):
         """
@@ -970,7 +970,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': ' $15,000,456.34 Dollars '})
-        self.assertAlmostEquals(val, 15000456.34)
+        self.assertAlmostEqual(val, 15000456.34)
 
     def test_get_value_non_numeric_unicode(self):
         """
@@ -978,7 +978,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': u' $15,000,456.34 Dollars '})
-        self.assertAlmostEquals(val, 15000456.34)
+        self.assertAlmostEqual(val, 15000456.34)
 
     def test_get_value_str(self):
         """
@@ -986,7 +986,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': '1'})
-        self.assertAlmostEquals(val, 1.0)
+        self.assertAlmostEqual(val, 1.0)
 
     def test_get_value_int(self):
         """
@@ -994,7 +994,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': 5})
-        self.assertAlmostEquals(val, 5.0)
+        self.assertAlmostEqual(val, 5.0)
 
     def test_get_value_float(self):
         """
@@ -1002,7 +1002,7 @@ class FloatFieldSchemaTest(TestCase):
         """
         field_schema = G(FieldSchema, field_key='val', field_type=FieldSchemaType.FLOAT)
         val = field_schema.get_value({'val': 5.2})
-        self.assertAlmostEquals(val, 5.2)
+        self.assertAlmostEqual(val, 5.2)
 
 
 class FieldOptionTest(TestCase):

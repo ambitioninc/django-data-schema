@@ -17,8 +17,8 @@ class ConvertValueExceptionTest(SimpleTestCase):
         with self.assertRaises(ValueError) as ctx:
             convert_value(FieldSchemaType.INT, bad_value)
 
-        self.assertEquals(bad_value, ctx.exception.bad_value)
-        self.assertEquals(FieldSchemaType.INT, ctx.exception.expected_type)
+        self.assertEqual(bad_value, ctx.exception.bad_value)
+        self.assertEqual(FieldSchemaType.INT, ctx.exception.expected_type)
 
 
 class BooleanConverterTest(SimpleTestCase):
