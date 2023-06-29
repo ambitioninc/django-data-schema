@@ -1,5 +1,10 @@
 Release Notes
 
+v2.1.0
+------
+* Drop django 2
+* Add django 4.2
+
 v2.0.1
 ------
 * Add blank=True to null model fields
