@@ -40,7 +40,7 @@ Please arrange imports with the following style
 import os
 
 # Third party package imports
-from mock import patch
+from unittest.mock import patch
 from django.conf import settings
 
 # Local package imports

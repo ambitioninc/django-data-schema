@@ -1,4 +1,4 @@
-Django>=2.2
-django-manager-utils>=1.4.0
-fleming>=0.5.0
+Django>=3.2
+django-manager-utils>=3.1.0
+fleming>=0.7.0
 python-dateutil>=2.2
